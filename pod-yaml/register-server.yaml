@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: register-server
+  namespace: trusted-execution-clusters
+  labels:
+    component: register-server
+    tier: control-plane
+spec:
+  hostNetwork: true
+  containers:
+  - name: register-server
+    args:
+    - --port
+    - "8000"
+    image: quay.io/rhn_support_fjin/registration-server:latest
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: KUBECONFIG
+      value: /etc/kubernetes/admin.conf
+    - name: BOOTSTRAP_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    ports:
+    - containerPort: 8000
+      name: http
+      protocol: TCP
+    resources: {}
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/kubernetes/admin.conf
+      name: kubeconfig
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/admin.conf
+      type: FileOrCreate
+    name: kubeconfig

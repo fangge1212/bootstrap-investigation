@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: trustee-deployment
+  namespace: trusted-execution-clusters
+  labels:
+    component: kbs
+    tier: control-plane
+spec:
+  hostNetwork: true
+  containers:
+  - name: kbs
+    command:
+    - /usr/local/bin/kbs
+    - --config-file
+    - /opt/trustee/kbs-config.toml
+    env:
+    - name: RUST_LOG
+      value: debug
+    image: quay.io/trusted-execution-clusters/key-broker-service:tpm-verifier-built-in-as-20250711
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    resources: {}
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    # NOTE: Static pods cannot use ConfigMaps or Secrets.
+    # You must create these directories on the host and mount them via hostPath,
+    # or bake the configuration into the container image.
+    # The original pod had 60+ ConfigMap and Secret mounts that need to be
+    # replaced with hostPath volumes pointing to files on the node.
+    - mountPath: /opt/trustee/policies/opa
+      name: attestation-policy
+    - mountPath: /opt/trustee
+      name: trustee-data
+    - mountPath: /opt/trustee/kbs-repository/default
+      name: resource-dir
+    - mountPath: /etc/kubernetes/admin.conf
+      name: kubeconfig
+      readOnly: true
+    # Add additional hostPath mounts for the 60+ secret directories as needed
+    # Example:
+    # - mountPath: /opt/trustee/kbs-repository/default/838ae9ea-b091-4354-bc09-1ca444205317
+    #   name: secret-838ae9ea
+  volumes:
+  # Static pods cannot use ConfigMaps or Secrets directly.
+  # Replace these with hostPath volumes that point to files on the node.
+  # You need to manually create the configuration files on the host.
+  - name: attestation-policy
+    hostPath:
+      path: /var/lib/kubelet/static-pod-resources/trustee/attestation-policy
+      type: DirectoryOrCreate
+  - name: trustee-data
+    hostPath:
+      path: /var/lib/kubelet/static-pod-resources/trustee/trustee-data
+      type: DirectoryOrCreate
+  - name: resource-dir
+    emptyDir:
+      medium: Memory
+  # Add hostPath volumes for all the secrets that were in the original pod
+  # Example:
+  # - name: secret-838ae9ea
+  #   hostPath:
+  #     path: /var/lib/kubelet/static-pod-resources/trustee/secrets/838ae9ea-b091-4354-bc09-1ca444205317
+  #     type: DirectoryOrCreate
+  - name: kubeconfig
+    hostPath:
+      path: /etc/kubernetes/admin.conf
+      type: FileOrCreate

@@ -1,0 +1,641 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.129.0.21/23"],"mac_address":"0a:58:0a:81:00:15","gateway_ips":["10.129.0.1"],"routes":[{"dest":"10.128.0.0/14","nextHop":"10.129.0.1"},{"dest":"172.30.0.0/16","nextHop":"10.129.0.1"},{"dest":"169.254.0.5/32","nextHop":"10.129.0.1"},{"dest":"100.64.0.0/16","nextHop":"10.129.0.1"}],"ip_address":"10.129.0.21/23","gateway_ip":"10.129.0.1","role":"primary"}}'
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "ovn-kubernetes",
+          "interface": "eth0",
+          "ips": [
+              "10.129.0.21"
+          ],
+          "mac": "0a:58:0a:81:00:15",
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    security.openshift.io/validated-scc-subject-type: user
+  creationTimestamp: "2025-12-12T11:21:42Z"
+  generateName: trustee-deployment-6c57d6db74-
+  generation: 1
+  labels:
+    app: kbs
+    pod-template-hash: 6c57d6db74
+  name: trustee-deployment-6c57d6db74-5g85d
+  namespace: demo-cocl
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: trustee-deployment-6c57d6db74
+    uid: da457b03-9c95-40b2-b409-76b0fcde6b46
+  resourceVersion: "6124821"
+  uid: b02c91b6-0302-408a-b327-b84add06df70
+spec:
+  containers:
+  - command:
+    - /usr/local/bin/kbs
+    - --config-file
+    - /opt/trustee/kbs-config.toml
+    env:
+    - name: RUST_LOG
+      value: debug
+    image: quay.io/trusted-execution-clusters/key-broker-service:tpm-verifier-built-in-as-20250711
+    imagePullPolicy: IfNotPresent
+    name: kbs
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000770000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /opt/trustee/policies/opa
+      name: attestation-policy
+    - mountPath: /opt/trustee
+      name: trustee-data
+    - mountPath: /opt/trustee/kbs-repository/default
+      name: resource-dir
+    - mountPath: /opt/trustee/kbs-repository/default/838ae9ea-b091-4354-bc09-1ca444205317
+      name: 838ae9ea-b091-4354-bc09-1ca444205317
+    - mountPath: /opt/trustee/kbs-repository/default/eecb26d4-7cdd-4601-90c5-db8bb31b690c
+      name: eecb26d4-7cdd-4601-90c5-db8bb31b690c
+    - mountPath: /opt/trustee/kbs-repository/default/141b48c0-973f-4964-ba43-0b9ea7112e04
+      name: 141b48c0-973f-4964-ba43-0b9ea7112e04
+    - mountPath: /opt/trustee/kbs-repository/default/88491fbf-7493-4a86-81a7-e4eef28c34c4
+      name: 88491fbf-7493-4a86-81a7-e4eef28c34c4
+    - mountPath: /opt/trustee/kbs-repository/default/2f5a90f1-86f6-4dbd-a244-a1c4249ca57e
+      name: 2f5a90f1-86f6-4dbd-a244-a1c4249ca57e
+    - mountPath: /opt/trustee/kbs-repository/default/6a0477a6-6f35-4143-bae7-4d0f570f3a72
+      name: 6a0477a6-6f35-4143-bae7-4d0f570f3a72
+    - mountPath: /opt/trustee/kbs-repository/default/d1f80713-cee9-4642-ac9c-088c8d805cde
+      name: d1f80713-cee9-4642-ac9c-088c8d805cde
+    - mountPath: /opt/trustee/kbs-repository/default/6208e42d-7dc9-4727-9891-eccbe03c0050
+      name: 6208e42d-7dc9-4727-9891-eccbe03c0050
+    - mountPath: /opt/trustee/kbs-repository/default/3f3e5a4a-7062-48d2-bd08-dd6a1188bc61
+      name: 3f3e5a4a-7062-48d2-bd08-dd6a1188bc61
+    - mountPath: /opt/trustee/kbs-repository/default/ec600f31-cf68-4ba1-b192-267006f49dea
+      name: ec600f31-cf68-4ba1-b192-267006f49dea
+    - mountPath: /opt/trustee/kbs-repository/default/d89fe8a0-b20a-41e4-82ce-1c1b85cf371d
+      name: d89fe8a0-b20a-41e4-82ce-1c1b85cf371d
+    - mountPath: /opt/trustee/kbs-repository/default/04ec796b-9738-4680-b188-19461e8dc585
+      name: 04ec796b-9738-4680-b188-19461e8dc585
+    - mountPath: /opt/trustee/kbs-repository/default/6f122c83-368c-4a90-9aeb-70eecf21171b
+      name: 6f122c83-368c-4a90-9aeb-70eecf21171b
+    - mountPath: /opt/trustee/kbs-repository/default/9e52748e-ed14-4fa6-bef5-1ce181815651
+      name: 9e52748e-ed14-4fa6-bef5-1ce181815651
+    - mountPath: /opt/trustee/kbs-repository/default/c7d63c5b-a1ca-4f6f-83c0-dda5b149d0d2
+      name: c7d63c5b-a1ca-4f6f-83c0-dda5b149d0d2
+    - mountPath: /opt/trustee/kbs-repository/default/7af4831f-bebe-422c-9bad-3dc687883741
+      name: 7af4831f-bebe-422c-9bad-3dc687883741
+    - mountPath: /opt/trustee/kbs-repository/default/34bdc406-5acb-43da-938b-7002842dcf77
+      name: 34bdc406-5acb-43da-938b-7002842dcf77
+    - mountPath: /opt/trustee/kbs-repository/default/d08ef749-65c7-451a-9270-bd5d6871cc6d
+      name: d08ef749-65c7-451a-9270-bd5d6871cc6d
+    - mountPath: /opt/trustee/kbs-repository/default/49fbb89d-2d04-4155-af7e-41f1e80778f7
+      name: 49fbb89d-2d04-4155-af7e-41f1e80778f7
+    - mountPath: /opt/trustee/kbs-repository/default/47810391-c753-4d77-bfdc-69cdb5272788
+      name: 47810391-c753-4d77-bfdc-69cdb5272788
+    - mountPath: /opt/trustee/kbs-repository/default/29f43333-4b4b-4575-b203-1db17fd37d51
+      name: 29f43333-4b4b-4575-b203-1db17fd37d51
+    - mountPath: /opt/trustee/kbs-repository/default/c95b6840-07a1-4df5-9c51-fa645d578f7f
+      name: c95b6840-07a1-4df5-9c51-fa645d578f7f
+    - mountPath: /opt/trustee/kbs-repository/default/1d1d52c9-ce78-41dd-916d-83c83cfd74de
+      name: 1d1d52c9-ce78-41dd-916d-83c83cfd74de
+    - mountPath: /opt/trustee/kbs-repository/default/321c612f-be48-4aeb-819f-31a9d2c8c3ba
+      name: 321c612f-be48-4aeb-819f-31a9d2c8c3ba
+    - mountPath: /opt/trustee/kbs-repository/default/19d46dde-1b13-4260-97e5-ca0d548e7094
+      name: 19d46dde-1b13-4260-97e5-ca0d548e7094
+    - mountPath: /opt/trustee/kbs-repository/default/7caf3c3c-22d8-4950-867f-238f307d89e3
+      name: 7caf3c3c-22d8-4950-867f-238f307d89e3
+    - mountPath: /opt/trustee/kbs-repository/default/a7f4dede-310c-4635-a300-8034a6629b01
+      name: a7f4dede-310c-4635-a300-8034a6629b01
+    - mountPath: /opt/trustee/kbs-repository/default/ff0bb072-a803-492e-8133-7b9dad859682
+      name: ff0bb072-a803-492e-8133-7b9dad859682
+    - mountPath: /opt/trustee/kbs-repository/default/fa4d1e4d-f9c5-4a1d-a196-46def6782513
+      name: fa4d1e4d-f9c5-4a1d-a196-46def6782513
+    - mountPath: /opt/trustee/kbs-repository/default/1740308f-0fc0-47ce-b985-6b41c9074670
+      name: 1740308f-0fc0-47ce-b985-6b41c9074670
+    - mountPath: /opt/trustee/kbs-repository/default/f31185cf-1f13-4760-8cbf-5d1ad0b0e0b3
+      name: f31185cf-1f13-4760-8cbf-5d1ad0b0e0b3
+    - mountPath: /opt/trustee/kbs-repository/default/4072640d-bfb9-42ba-b9de-4e534b27a813
+      name: 4072640d-bfb9-42ba-b9de-4e534b27a813
+    - mountPath: /opt/trustee/kbs-repository/default/caf7b6bd-5e0e-4d56-972a-7df484691043
+      name: caf7b6bd-5e0e-4d56-972a-7df484691043
+    - mountPath: /opt/trustee/kbs-repository/default/18e870a9-d868-405a-808c-6ac8373bc368
+      name: 18e870a9-d868-405a-808c-6ac8373bc368
+    - mountPath: /opt/trustee/kbs-repository/default/652d7b4e-992f-42bf-83f0-8e0d639361f5
+      name: 652d7b4e-992f-42bf-83f0-8e0d639361f5
+    - mountPath: /opt/trustee/kbs-repository/default/bf7c4ebd-77a0-403e-a2d2-b74a30903530
+      name: bf7c4ebd-77a0-403e-a2d2-b74a30903530
+    - mountPath: /opt/trustee/kbs-repository/default/497926f6-66d5-40ef-85f7-973eb8a0b7ee
+      name: 497926f6-66d5-40ef-85f7-973eb8a0b7ee
+    - mountPath: /opt/trustee/kbs-repository/default/75308448-522f-402a-b30f-bfbc5e72c845
+      name: 75308448-522f-402a-b30f-bfbc5e72c845
+    - mountPath: /opt/trustee/kbs-repository/default/9d44cc0f-c7a5-4ed0-b325-affaaaaeb19b
+      name: 9d44cc0f-c7a5-4ed0-b325-affaaaaeb19b
+    - mountPath: /opt/trustee/kbs-repository/default/751a76de-eab9-4a67-b0f7-706d79820410
+      name: 751a76de-eab9-4a67-b0f7-706d79820410
+    - mountPath: /opt/trustee/kbs-repository/default/7997ad9b-392d-406e-ab8d-e30c899085b3
+      name: 7997ad9b-392d-406e-ab8d-e30c899085b3
+    - mountPath: /opt/trustee/kbs-repository/default/4a2a3c05-4a8d-4fdf-a2c8-5793b0b5a5dd
+      name: 4a2a3c05-4a8d-4fdf-a2c8-5793b0b5a5dd
+    - mountPath: /opt/trustee/kbs-repository/default/f96721cd-0ea5-40ce-a571-f25b2e5fdf93
+      name: f96721cd-0ea5-40ce-a571-f25b2e5fdf93
+    - mountPath: /opt/trustee/kbs-repository/default/d4bd20d4-8fdd-4d22-acf4-e30ff7414da2
+      name: d4bd20d4-8fdd-4d22-acf4-e30ff7414da2
+    - mountPath: /opt/trustee/kbs-repository/default/3531fcd8-8074-4e5c-addf-14818b4666c9
+      name: 3531fcd8-8074-4e5c-addf-14818b4666c9
+    - mountPath: /opt/trustee/kbs-repository/default/1d90176e-0c36-4f2b-8309-5bff7753d836
+      name: 1d90176e-0c36-4f2b-8309-5bff7753d836
+    - mountPath: /opt/trustee/kbs-repository/default/a3bf6372-6799-46e3-94a2-2fc85a71f455
+      name: a3bf6372-6799-46e3-94a2-2fc85a71f455
+    - mountPath: /opt/trustee/kbs-repository/default/33d02a63-f748-402a-8c0f-95191ef03a60
+      name: 33d02a63-f748-402a-8c0f-95191ef03a60
+    - mountPath: /opt/trustee/kbs-repository/default/f08a61df-0b84-422c-9ba2-b5d0f34de7b2
+      name: f08a61df-0b84-422c-9ba2-b5d0f34de7b2
+    - mountPath: /opt/trustee/kbs-repository/default/c244d180-6c79-4474-8b14-f9324206dfca
+      name: c244d180-6c79-4474-8b14-f9324206dfca
+    - mountPath: /opt/trustee/kbs-repository/default/8cef4fea-1bf5-4400-857d-52de69dc89a0
+      name: 8cef4fea-1bf5-4400-857d-52de69dc89a0
+    - mountPath: /opt/trustee/kbs-repository/default/ad8a3e45-6730-46f9-a833-6193841822d4
+      name: ad8a3e45-6730-46f9-a833-6193841822d4
+    - mountPath: /opt/trustee/kbs-repository/default/e057825d-b039-4ef1-8f11-eed3cf7d5e0d
+      name: e057825d-b039-4ef1-8f11-eed3cf7d5e0d
+    - mountPath: /opt/trustee/kbs-repository/default/603a0772-09c2-453c-afd4-0eea03a95f57
+      name: 603a0772-09c2-453c-afd4-0eea03a95f57
+    - mountPath: /opt/trustee/kbs-repository/default/a79d2f79-7d5c-4bee-ae2f-fbe004e4d348
+      name: a79d2f79-7d5c-4bee-ae2f-fbe004e4d348
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-pbgbx
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: default-dockercfg-zmjbx
+  nodeName: bb-421-shared-capz-hlhv6-worker-eastus1-rbdt4
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000770000
+    seLinuxOptions:
+      level: s0:c28,c7
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: attestation-policy
+    name: attestation-policy
+  - configMap:
+      defaultMode: 420
+      name: trustee-data
+    name: trustee-data
+  - emptyDir:
+      medium: Memory
+    name: resource-dir
+  - name: 838ae9ea-b091-4354-bc09-1ca444205317
+    secret:
+      defaultMode: 420
+      secretName: 838ae9ea-b091-4354-bc09-1ca444205317
+  - name: eecb26d4-7cdd-4601-90c5-db8bb31b690c
+    secret:
+      defaultMode: 420
+      secretName: eecb26d4-7cdd-4601-90c5-db8bb31b690c
+  - name: 141b48c0-973f-4964-ba43-0b9ea7112e04
+    secret:
+      defaultMode: 420
+      secretName: 141b48c0-973f-4964-ba43-0b9ea7112e04
+  - name: 88491fbf-7493-4a86-81a7-e4eef28c34c4
+    secret:
+      defaultMode: 420
+      secretName: 88491fbf-7493-4a86-81a7-e4eef28c34c4
+  - name: 2f5a90f1-86f6-4dbd-a244-a1c4249ca57e
+    secret:
+      defaultMode: 420
+      secretName: 2f5a90f1-86f6-4dbd-a244-a1c4249ca57e
+  - name: 6a0477a6-6f35-4143-bae7-4d0f570f3a72
+    secret:
+      defaultMode: 420
+      secretName: 6a0477a6-6f35-4143-bae7-4d0f570f3a72
+  - name: d1f80713-cee9-4642-ac9c-088c8d805cde
+    secret:
+      defaultMode: 420
+      secretName: d1f80713-cee9-4642-ac9c-088c8d805cde
+  - name: 6208e42d-7dc9-4727-9891-eccbe03c0050
+    secret:
+      defaultMode: 420
+      secretName: 6208e42d-7dc9-4727-9891-eccbe03c0050
+  - name: 3f3e5a4a-7062-48d2-bd08-dd6a1188bc61
+    secret:
+      defaultMode: 420
+      secretName: 3f3e5a4a-7062-48d2-bd08-dd6a1188bc61
+  - name: ec600f31-cf68-4ba1-b192-267006f49dea
+    secret:
+      defaultMode: 420
+      secretName: ec600f31-cf68-4ba1-b192-267006f49dea
+  - name: d89fe8a0-b20a-41e4-82ce-1c1b85cf371d
+    secret:
+      defaultMode: 420
+      secretName: d89fe8a0-b20a-41e4-82ce-1c1b85cf371d
+  - name: 04ec796b-9738-4680-b188-19461e8dc585
+    secret:
+      defaultMode: 420
+      secretName: 04ec796b-9738-4680-b188-19461e8dc585
+  - name: 6f122c83-368c-4a90-9aeb-70eecf21171b
+    secret:
+      defaultMode: 420
+      secretName: 6f122c83-368c-4a90-9aeb-70eecf21171b
+  - name: 9e52748e-ed14-4fa6-bef5-1ce181815651
+    secret:
+      defaultMode: 420
+      secretName: 9e52748e-ed14-4fa6-bef5-1ce181815651
+  - name: c7d63c5b-a1ca-4f6f-83c0-dda5b149d0d2
+    secret:
+      defaultMode: 420
+      secretName: c7d63c5b-a1ca-4f6f-83c0-dda5b149d0d2
+  - name: 7af4831f-bebe-422c-9bad-3dc687883741
+    secret:
+      defaultMode: 420
+      secretName: 7af4831f-bebe-422c-9bad-3dc687883741
+  - name: 34bdc406-5acb-43da-938b-7002842dcf77
+    secret:
+      defaultMode: 420
+      secretName: 34bdc406-5acb-43da-938b-7002842dcf77
+  - name: d08ef749-65c7-451a-9270-bd5d6871cc6d
+    secret:
+      defaultMode: 420
+      secretName: d08ef749-65c7-451a-9270-bd5d6871cc6d
+  - name: 49fbb89d-2d04-4155-af7e-41f1e80778f7
+    secret:
+      defaultMode: 420
+      secretName: 49fbb89d-2d04-4155-af7e-41f1e80778f7
+  - name: 47810391-c753-4d77-bfdc-69cdb5272788
+    secret:
+      defaultMode: 420
+      secretName: 47810391-c753-4d77-bfdc-69cdb5272788
+  - name: 29f43333-4b4b-4575-b203-1db17fd37d51
+    secret:
+      defaultMode: 420
+      secretName: 29f43333-4b4b-4575-b203-1db17fd37d51
+  - name: c95b6840-07a1-4df5-9c51-fa645d578f7f
+    secret:
+      defaultMode: 420
+      secretName: c95b6840-07a1-4df5-9c51-fa645d578f7f
+  - name: 1d1d52c9-ce78-41dd-916d-83c83cfd74de
+    secret:
+      defaultMode: 420
+      secretName: 1d1d52c9-ce78-41dd-916d-83c83cfd74de
+  - name: 321c612f-be48-4aeb-819f-31a9d2c8c3ba
+    secret:
+      defaultMode: 420
+      secretName: 321c612f-be48-4aeb-819f-31a9d2c8c3ba
+  - name: 19d46dde-1b13-4260-97e5-ca0d548e7094
+    secret:
+      defaultMode: 420
+      secretName: 19d46dde-1b13-4260-97e5-ca0d548e7094
+  - name: 7caf3c3c-22d8-4950-867f-238f307d89e3
+    secret:
+      defaultMode: 420
+      secretName: 7caf3c3c-22d8-4950-867f-238f307d89e3
+  - name: a7f4dede-310c-4635-a300-8034a6629b01
+    secret:
+      defaultMode: 420
+      secretName: a7f4dede-310c-4635-a300-8034a6629b01
+  - name: ff0bb072-a803-492e-8133-7b9dad859682
+    secret:
+      defaultMode: 420
+      secretName: ff0bb072-a803-492e-8133-7b9dad859682
+  - name: fa4d1e4d-f9c5-4a1d-a196-46def6782513
+    secret:
+      defaultMode: 420
+      secretName: fa4d1e4d-f9c5-4a1d-a196-46def6782513
+  - name: 1740308f-0fc0-47ce-b985-6b41c9074670
+    secret:
+      defaultMode: 420
+      secretName: 1740308f-0fc0-47ce-b985-6b41c9074670
+  - name: f31185cf-1f13-4760-8cbf-5d1ad0b0e0b3
+    secret:
+      defaultMode: 420
+      secretName: f31185cf-1f13-4760-8cbf-5d1ad0b0e0b3
+  - name: 4072640d-bfb9-42ba-b9de-4e534b27a813
+    secret:
+      defaultMode: 420
+      secretName: 4072640d-bfb9-42ba-b9de-4e534b27a813
+  - name: caf7b6bd-5e0e-4d56-972a-7df484691043
+    secret:
+      defaultMode: 420
+      secretName: caf7b6bd-5e0e-4d56-972a-7df484691043
+  - name: 18e870a9-d868-405a-808c-6ac8373bc368
+    secret:
+      defaultMode: 420
+      secretName: 18e870a9-d868-405a-808c-6ac8373bc368
+  - name: 652d7b4e-992f-42bf-83f0-8e0d639361f5
+    secret:
+      defaultMode: 420
+      secretName: 652d7b4e-992f-42bf-83f0-8e0d639361f5
+  - name: bf7c4ebd-77a0-403e-a2d2-b74a30903530
+    secret:
+      defaultMode: 420
+      secretName: bf7c4ebd-77a0-403e-a2d2-b74a30903530
+  - name: 497926f6-66d5-40ef-85f7-973eb8a0b7ee
+    secret:
+      defaultMode: 420
+      secretName: 497926f6-66d5-40ef-85f7-973eb8a0b7ee
+  - name: 75308448-522f-402a-b30f-bfbc5e72c845
+    secret:
+      defaultMode: 420
+      secretName: 75308448-522f-402a-b30f-bfbc5e72c845
+  - name: 9d44cc0f-c7a5-4ed0-b325-affaaaaeb19b
+    secret:
+      defaultMode: 420
+      secretName: 9d44cc0f-c7a5-4ed0-b325-affaaaaeb19b
+  - name: 751a76de-eab9-4a67-b0f7-706d79820410
+    secret:
+      defaultMode: 420
+      secretName: 751a76de-eab9-4a67-b0f7-706d79820410
+  - name: 7997ad9b-392d-406e-ab8d-e30c899085b3
+    secret:
+      defaultMode: 420
+      secretName: 7997ad9b-392d-406e-ab8d-e30c899085b3
+  - name: 4a2a3c05-4a8d-4fdf-a2c8-5793b0b5a5dd
+    secret:
+      defaultMode: 420
+      secretName: 4a2a3c05-4a8d-4fdf-a2c8-5793b0b5a5dd
+  - name: f96721cd-0ea5-40ce-a571-f25b2e5fdf93
+    secret:
+      defaultMode: 420
+      secretName: f96721cd-0ea5-40ce-a571-f25b2e5fdf93
+  - name: d4bd20d4-8fdd-4d22-acf4-e30ff7414da2
+    secret:
+      defaultMode: 420
+      secretName: d4bd20d4-8fdd-4d22-acf4-e30ff7414da2
+  - name: 3531fcd8-8074-4e5c-addf-14818b4666c9
+    secret:
+      defaultMode: 420
+      secretName: 3531fcd8-8074-4e5c-addf-14818b4666c9
+  - name: 1d90176e-0c36-4f2b-8309-5bff7753d836
+    secret:
+      defaultMode: 420
+      secretName: 1d90176e-0c36-4f2b-8309-5bff7753d836
+  - name: a3bf6372-6799-46e3-94a2-2fc85a71f455
+    secret:
+      defaultMode: 420
+      secretName: a3bf6372-6799-46e3-94a2-2fc85a71f455
+  - name: 33d02a63-f748-402a-8c0f-95191ef03a60
+    secret:
+      defaultMode: 420
+      secretName: 33d02a63-f748-402a-8c0f-95191ef03a60
+  - name: f08a61df-0b84-422c-9ba2-b5d0f34de7b2
+    secret:
+      defaultMode: 420
+      secretName: f08a61df-0b84-422c-9ba2-b5d0f34de7b2
+  - name: c244d180-6c79-4474-8b14-f9324206dfca
+    secret:
+      defaultMode: 420
+      secretName: c244d180-6c79-4474-8b14-f9324206dfca
+  - name: 8cef4fea-1bf5-4400-857d-52de69dc89a0
+    secret:
+      defaultMode: 420
+      secretName: 8cef4fea-1bf5-4400-857d-52de69dc89a0
+  - name: ad8a3e45-6730-46f9-a833-6193841822d4
+    secret:
+      defaultMode: 420
+      secretName: ad8a3e45-6730-46f9-a833-6193841822d4
+  - name: e057825d-b039-4ef1-8f11-eed3cf7d5e0d
+    secret:
+      defaultMode: 420
+      secretName: e057825d-b039-4ef1-8f11-eed3cf7d5e0d
+  - name: 603a0772-09c2-453c-afd4-0eea03a95f57
+    secret:
+      defaultMode: 420
+      secretName: 603a0772-09c2-453c-afd4-0eea03a95f57
+  - name: a79d2f79-7d5c-4bee-ae2f-fbe004e4d348
+    secret:
+      defaultMode: 420
+      secretName: a79d2f79-7d5c-4bee-ae2f-fbe004e4d348
+  - name: kube-api-access-pbgbx
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:01Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:17:42Z"
+    observedGeneration: 1
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:01Z"
+    observedGeneration: 1
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:01Z"
+    observedGeneration: 1
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:17:41Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://384a555cbc8bc9fd1c1ddb67159cce8355cd051678c43ce9452623052417a4e9
+    image: quay.io/trusted-execution-clusters/key-broker-service:tpm-verifier-built-in-as-20250711
+    imageID: quay.io/trusted-execution-clusters/key-broker-service@sha256:b604043f1a0123782611cf0482dc7c9fba0c732d5bf067bed94ec31e29a5fc07
+    lastState: {}
+    name: kbs
+    ready: true
+    resources: {}
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-12-18T08:18:00Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        - 1000770000
+        uid: 1000770000
+    volumeMounts:
+    - mountPath: /opt/trustee/policies/opa
+      name: attestation-policy
+    - mountPath: /opt/trustee
+      name: trustee-data
+    - mountPath: /opt/trustee/kbs-repository/default
+      name: resource-dir
+    - mountPath: /opt/trustee/kbs-repository/default/838ae9ea-b091-4354-bc09-1ca444205317
+      name: 838ae9ea-b091-4354-bc09-1ca444205317
+    - mountPath: /opt/trustee/kbs-repository/default/eecb26d4-7cdd-4601-90c5-db8bb31b690c
+      name: eecb26d4-7cdd-4601-90c5-db8bb31b690c
+    - mountPath: /opt/trustee/kbs-repository/default/141b48c0-973f-4964-ba43-0b9ea7112e04
+      name: 141b48c0-973f-4964-ba43-0b9ea7112e04
+    - mountPath: /opt/trustee/kbs-repository/default/88491fbf-7493-4a86-81a7-e4eef28c34c4
+      name: 88491fbf-7493-4a86-81a7-e4eef28c34c4
+    - mountPath: /opt/trustee/kbs-repository/default/2f5a90f1-86f6-4dbd-a244-a1c4249ca57e
+      name: 2f5a90f1-86f6-4dbd-a244-a1c4249ca57e
+    - mountPath: /opt/trustee/kbs-repository/default/6a0477a6-6f35-4143-bae7-4d0f570f3a72
+      name: 6a0477a6-6f35-4143-bae7-4d0f570f3a72
+    - mountPath: /opt/trustee/kbs-repository/default/d1f80713-cee9-4642-ac9c-088c8d805cde
+      name: d1f80713-cee9-4642-ac9c-088c8d805cde
+    - mountPath: /opt/trustee/kbs-repository/default/6208e42d-7dc9-4727-9891-eccbe03c0050
+      name: 6208e42d-7dc9-4727-9891-eccbe03c0050
+    - mountPath: /opt/trustee/kbs-repository/default/3f3e5a4a-7062-48d2-bd08-dd6a1188bc61
+      name: 3f3e5a4a-7062-48d2-bd08-dd6a1188bc61
+    - mountPath: /opt/trustee/kbs-repository/default/ec600f31-cf68-4ba1-b192-267006f49dea
+      name: ec600f31-cf68-4ba1-b192-267006f49dea
+    - mountPath: /opt/trustee/kbs-repository/default/d89fe8a0-b20a-41e4-82ce-1c1b85cf371d
+      name: d89fe8a0-b20a-41e4-82ce-1c1b85cf371d
+    - mountPath: /opt/trustee/kbs-repository/default/04ec796b-9738-4680-b188-19461e8dc585
+      name: 04ec796b-9738-4680-b188-19461e8dc585
+    - mountPath: /opt/trustee/kbs-repository/default/6f122c83-368c-4a90-9aeb-70eecf21171b
+      name: 6f122c83-368c-4a90-9aeb-70eecf21171b
+    - mountPath: /opt/trustee/kbs-repository/default/9e52748e-ed14-4fa6-bef5-1ce181815651
+      name: 9e52748e-ed14-4fa6-bef5-1ce181815651
+    - mountPath: /opt/trustee/kbs-repository/default/c7d63c5b-a1ca-4f6f-83c0-dda5b149d0d2
+      name: c7d63c5b-a1ca-4f6f-83c0-dda5b149d0d2
+    - mountPath: /opt/trustee/kbs-repository/default/7af4831f-bebe-422c-9bad-3dc687883741
+      name: 7af4831f-bebe-422c-9bad-3dc687883741
+    - mountPath: /opt/trustee/kbs-repository/default/34bdc406-5acb-43da-938b-7002842dcf77
+      name: 34bdc406-5acb-43da-938b-7002842dcf77
+    - mountPath: /opt/trustee/kbs-repository/default/d08ef749-65c7-451a-9270-bd5d6871cc6d
+      name: d08ef749-65c7-451a-9270-bd5d6871cc6d
+    - mountPath: /opt/trustee/kbs-repository/default/49fbb89d-2d04-4155-af7e-41f1e80778f7
+      name: 49fbb89d-2d04-4155-af7e-41f1e80778f7
+    - mountPath: /opt/trustee/kbs-repository/default/47810391-c753-4d77-bfdc-69cdb5272788
+      name: 47810391-c753-4d77-bfdc-69cdb5272788
+    - mountPath: /opt/trustee/kbs-repository/default/29f43333-4b4b-4575-b203-1db17fd37d51
+      name: 29f43333-4b4b-4575-b203-1db17fd37d51
+    - mountPath: /opt/trustee/kbs-repository/default/c95b6840-07a1-4df5-9c51-fa645d578f7f
+      name: c95b6840-07a1-4df5-9c51-fa645d578f7f
+    - mountPath: /opt/trustee/kbs-repository/default/1d1d52c9-ce78-41dd-916d-83c83cfd74de
+      name: 1d1d52c9-ce78-41dd-916d-83c83cfd74de
+    - mountPath: /opt/trustee/kbs-repository/default/321c612f-be48-4aeb-819f-31a9d2c8c3ba
+      name: 321c612f-be48-4aeb-819f-31a9d2c8c3ba
+    - mountPath: /opt/trustee/kbs-repository/default/19d46dde-1b13-4260-97e5-ca0d548e7094
+      name: 19d46dde-1b13-4260-97e5-ca0d548e7094
+    - mountPath: /opt/trustee/kbs-repository/default/7caf3c3c-22d8-4950-867f-238f307d89e3
+      name: 7caf3c3c-22d8-4950-867f-238f307d89e3
+    - mountPath: /opt/trustee/kbs-repository/default/a7f4dede-310c-4635-a300-8034a6629b01
+      name: a7f4dede-310c-4635-a300-8034a6629b01
+    - mountPath: /opt/trustee/kbs-repository/default/ff0bb072-a803-492e-8133-7b9dad859682
+      name: ff0bb072-a803-492e-8133-7b9dad859682
+    - mountPath: /opt/trustee/kbs-repository/default/fa4d1e4d-f9c5-4a1d-a196-46def6782513
+      name: fa4d1e4d-f9c5-4a1d-a196-46def6782513
+    - mountPath: /opt/trustee/kbs-repository/default/1740308f-0fc0-47ce-b985-6b41c9074670
+      name: 1740308f-0fc0-47ce-b985-6b41c9074670
+    - mountPath: /opt/trustee/kbs-repository/default/f31185cf-1f13-4760-8cbf-5d1ad0b0e0b3
+      name: f31185cf-1f13-4760-8cbf-5d1ad0b0e0b3
+    - mountPath: /opt/trustee/kbs-repository/default/4072640d-bfb9-42ba-b9de-4e534b27a813
+      name: 4072640d-bfb9-42ba-b9de-4e534b27a813
+    - mountPath: /opt/trustee/kbs-repository/default/caf7b6bd-5e0e-4d56-972a-7df484691043
+      name: caf7b6bd-5e0e-4d56-972a-7df484691043
+    - mountPath: /opt/trustee/kbs-repository/default/18e870a9-d868-405a-808c-6ac8373bc368
+      name: 18e870a9-d868-405a-808c-6ac8373bc368
+    - mountPath: /opt/trustee/kbs-repository/default/652d7b4e-992f-42bf-83f0-8e0d639361f5
+      name: 652d7b4e-992f-42bf-83f0-8e0d639361f5
+    - mountPath: /opt/trustee/kbs-repository/default/bf7c4ebd-77a0-403e-a2d2-b74a30903530
+      name: bf7c4ebd-77a0-403e-a2d2-b74a30903530
+    - mountPath: /opt/trustee/kbs-repository/default/497926f6-66d5-40ef-85f7-973eb8a0b7ee
+      name: 497926f6-66d5-40ef-85f7-973eb8a0b7ee
+    - mountPath: /opt/trustee/kbs-repository/default/75308448-522f-402a-b30f-bfbc5e72c845
+      name: 75308448-522f-402a-b30f-bfbc5e72c845
+    - mountPath: /opt/trustee/kbs-repository/default/9d44cc0f-c7a5-4ed0-b325-affaaaaeb19b
+      name: 9d44cc0f-c7a5-4ed0-b325-affaaaaeb19b
+    - mountPath: /opt/trustee/kbs-repository/default/751a76de-eab9-4a67-b0f7-706d79820410
+      name: 751a76de-eab9-4a67-b0f7-706d79820410
+    - mountPath: /opt/trustee/kbs-repository/default/7997ad9b-392d-406e-ab8d-e30c899085b3
+      name: 7997ad9b-392d-406e-ab8d-e30c899085b3
+    - mountPath: /opt/trustee/kbs-repository/default/4a2a3c05-4a8d-4fdf-a2c8-5793b0b5a5dd
+      name: 4a2a3c05-4a8d-4fdf-a2c8-5793b0b5a5dd
+    - mountPath: /opt/trustee/kbs-repository/default/f96721cd-0ea5-40ce-a571-f25b2e5fdf93
+      name: f96721cd-0ea5-40ce-a571-f25b2e5fdf93
+    - mountPath: /opt/trustee/kbs-repository/default/d4bd20d4-8fdd-4d22-acf4-e30ff7414da2
+      name: d4bd20d4-8fdd-4d22-acf4-e30ff7414da2
+    - mountPath: /opt/trustee/kbs-repository/default/3531fcd8-8074-4e5c-addf-14818b4666c9
+      name: 3531fcd8-8074-4e5c-addf-14818b4666c9
+    - mountPath: /opt/trustee/kbs-repository/default/1d90176e-0c36-4f2b-8309-5bff7753d836
+      name: 1d90176e-0c36-4f2b-8309-5bff7753d836
+    - mountPath: /opt/trustee/kbs-repository/default/a3bf6372-6799-46e3-94a2-2fc85a71f455
+      name: a3bf6372-6799-46e3-94a2-2fc85a71f455
+    - mountPath: /opt/trustee/kbs-repository/default/33d02a63-f748-402a-8c0f-95191ef03a60
+      name: 33d02a63-f748-402a-8c0f-95191ef03a60
+    - mountPath: /opt/trustee/kbs-repository/default/f08a61df-0b84-422c-9ba2-b5d0f34de7b2
+      name: f08a61df-0b84-422c-9ba2-b5d0f34de7b2
+    - mountPath: /opt/trustee/kbs-repository/default/c244d180-6c79-4474-8b14-f9324206dfca
+      name: c244d180-6c79-4474-8b14-f9324206dfca
+    - mountPath: /opt/trustee/kbs-repository/default/8cef4fea-1bf5-4400-857d-52de69dc89a0
+      name: 8cef4fea-1bf5-4400-857d-52de69dc89a0
+    - mountPath: /opt/trustee/kbs-repository/default/ad8a3e45-6730-46f9-a833-6193841822d4
+      name: ad8a3e45-6730-46f9-a833-6193841822d4
+    - mountPath: /opt/trustee/kbs-repository/default/e057825d-b039-4ef1-8f11-eed3cf7d5e0d
+      name: e057825d-b039-4ef1-8f11-eed3cf7d5e0d
+    - mountPath: /opt/trustee/kbs-repository/default/603a0772-09c2-453c-afd4-0eea03a95f57
+      name: 603a0772-09c2-453c-afd4-0eea03a95f57
+    - mountPath: /opt/trustee/kbs-repository/default/a79d2f79-7d5c-4bee-ae2f-fbe004e4d348
+      name: a79d2f79-7d5c-4bee-ae2f-fbe004e4d348
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-pbgbx
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 10.0.128.4
+  hostIPs:
+  - ip: 10.0.128.4
+  observedGeneration: 1
+  phase: Running
+  podIP: 10.129.0.21
+  podIPs:
+  - ip: 10.129.0.21
+  qosClass: BestEffort
+  startTime: "2025-12-18T08:17:42Z"

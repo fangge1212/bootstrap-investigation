@@ -1,0 +1,35 @@
+- creationdate: 09-12-2025 07:54
+  disks: []
+  id: cb0a65db-ee59-4117-8376-e751086a572c
+  image: /var/lib/libvirt/images/scos-qemu.x86_64.qcow2
+  ip: 192.168.122.243
+  kube: test
+  kubetype: openshift
+  name: test-bootstrap
+  nets:
+  - device: eth0
+    mac: 52:54:00:c3:34:e7
+    net: default
+    type: routed
+  plan: test
+  profile: kvirt
+  status: up
+  user: core
+- creationdate: 09-12-2025 07:54
+  disks: []
+  id: 4e5f3040-b5d7-4546-beae-09adbb841f20
+  image: /var/lib/libvirt/images/scos-qemu.x86_64.qcow2
+  ip: 192.168.122.82
+  kube: test
+  kubetype: openshift
+  name: test-ctlplane-0
+  nets:
+  - device: eth0
+    mac: 52:54:00:22:5f:67
+    net: default
+    type: routed
+  plan: test
+  profile: kvirt
+  status: up
+  user: core
+

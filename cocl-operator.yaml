@@ -1,0 +1,170 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.129.0.16/23"],"mac_address":"0a:58:0a:81:00:10","gateway_ips":["10.129.0.1"],"routes":[{"dest":"10.128.0.0/14","nextHop":"10.129.0.1"},{"dest":"172.30.0.0/16","nextHop":"10.129.0.1"},{"dest":"169.254.0.5/32","nextHop":"10.129.0.1"},{"dest":"100.64.0.0/16","nextHop":"10.129.0.1"}],"ip_address":"10.129.0.16/23","gateway_ip":"10.129.0.1","role":"primary"}}'
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "ovn-kubernetes",
+          "interface": "eth0",
+          "ips": [
+              "10.129.0.16"
+          ],
+          "mac": "0a:58:0a:81:00:10",
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    security.openshift.io/validated-scc-subject-type: user
+  creationTimestamp: "2025-12-12T11:21:40Z"
+  generateName: cocl-operator-7656d6cd5-
+  generation: 1
+  labels:
+    app: cocl-operator
+    pod-template-hash: 7656d6cd5
+  name: cocl-operator-7656d6cd5-wj2tz
+  namespace: demo-cocl
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: cocl-operator-7656d6cd5
+    uid: 36a39863-c5b5-4e4c-b14e-31f508c727da
+  resourceVersion: "6125448"
+  uid: eded6d25-1d0c-4e57-b8a3-73a1fcf1828b
+spec:
+  containers:
+  - command:
+    - /usr/bin/operator
+    image: image-registry.openshift-image-registry.svc:5000/demo-cocl/cocl-operator:latest
+    imagePullPolicy: Always
+    name: cocl-operator
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000770000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-bwhm8
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: cocl-operator-dockercfg-sbj49
+  nodeName: bb-421-shared-capz-hlhv6-worker-eastus1-rbdt4
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000770000
+    seLinuxOptions:
+      level: s0:c28,c7
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: cocl-operator
+  serviceAccountName: cocl-operator
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-bwhm8
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:28Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:17:42Z"
+    observedGeneration: 1
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:54Z"
+    observedGeneration: 1
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:54Z"
+    observedGeneration: 1
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:17:41Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://215638a0e0c5c9c1cbed14bbac85e12b0e55bc7b946a0028ff3815c1d199f0a1
+    image: image-registry.openshift-image-registry.svc:5000/demo-cocl/cocl-operator:latest
+    imageID: image-registry.openshift-image-registry.svc:5000/demo-cocl/cocl-operator@sha256:6f1c3ab163777668de840039c74a60244bc4fa37a4a81c9f72df89747c793083
+    lastState: {}
+    name: cocl-operator
+    ready: true
+    resources: {}
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-12-18T08:18:53Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        - 1000770000
+        uid: 1000770000
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-bwhm8
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 10.0.128.4
+  hostIPs:
+  - ip: 10.0.128.4
+  observedGeneration: 1
+  phase: Running
+  podIP: 10.129.0.16
+  podIPs:
+  - ip: 10.129.0.16
+  qosClass: BestEffort
+  startTime: "2025-12-18T08:17:42Z"

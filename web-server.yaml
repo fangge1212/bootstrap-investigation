@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.129.0.19/23"],"mac_address":"0a:58:0a:81:00:13","gateway_ips":["10.129.0.1"],"routes":[{"dest":"10.128.0.0/14","nextHop":"10.129.0.1"},{"dest":"172.30.0.0/16","nextHop":"10.129.0.1"},{"dest":"169.254.0.5/32","nextHop":"10.129.0.1"},{"dest":"100.64.0.0/16","nextHop":"10.129.0.1"}],"ip_address":"10.129.0.19/23","gateway_ip":"10.129.0.1","role":"primary"}}'
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "ovn-kubernetes",
+          "interface": "eth0",
+          "ips": [
+              "10.129.0.19"
+          ],
+          "mac": "0a:58:0a:81:00:13",
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    security.openshift.io/validated-scc-subject-type: user
+  creationTimestamp: "2025-12-12T11:21:41Z"
+  generateName: web-server-5f67f6c4b7-
+  generation: 1
+  labels:
+    app: web-server
+    pod-template-hash: 5f67f6c4b7
+  name: web-server-5f67f6c4b7-wtddc
+  namespace: demo-cocl
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: web-server-5f67f6c4b7
+    uid: ea89348e-d053-4b40-9b42-4d55fc794557
+  resourceVersion: "6125435"
+  uid: 4d635936-7fd9-419d-a428-ef57e6a8d276
+spec:
+  containers:
+  - image: registry.access.redhat.com/ubi8/httpd-24
+    imagePullPolicy: Always
+    name: httpd
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+    resources: {}
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000770000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/www/html
+      name: web-content
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-hrbwj
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: default-dockercfg-zmjbx
+  nodeName: bb-421-shared-capz-hlhv6-worker-eastus1-rbdt4
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000770000
+    seLinuxOptions:
+      level: s0:c28,c7
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: http-ignition-config
+    name: web-content
+  - name: kube-api-access-hrbwj
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:53Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:17:42Z"
+    observedGeneration: 1
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:53Z"
+    observedGeneration: 1
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:18:53Z"
+    observedGeneration: 1
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-12-18T08:17:41Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://0bc8a642c776e7bccef8df973df7032886883bff822f46da4cfd26ff1cb75b2f
+    image: registry.access.redhat.com/ubi8/httpd-24:latest
+    imageID: registry.access.redhat.com/ubi8/httpd-24@sha256:2cb8056a5351bb83aa51e2e485609452dfc7cd7ce032d4a2539a8f5a0d62620a
+    lastState: {}
+    name: httpd
+    ready: true
+    resources: {}
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-12-18T08:18:53Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        - 1000770000
+        uid: 1000770000
+    volumeMounts:
+    - mountPath: /var/www/html
+      name: web-content
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-hrbwj
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 10.0.128.4
+  hostIPs:
+  - ip: 10.0.128.4
+  observedGeneration: 1
+  phase: Running
+  podIP: 10.129.0.19
+  podIPs:
+  - ip: 10.129.0.19
+  qosClass: BestEffort
+  startTime: "2025-12-18T08:17:42Z"

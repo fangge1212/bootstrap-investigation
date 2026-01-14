@@ -1,0 +1,10 @@
+cp-0:
+  image: /var/lib/libvirt/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2
+  memory: 8192
+  numcpus: 4
+  sshkey: /root/.ssh/id_ed25519.pub
+  user: core
+  scripts:
+    - 01_base.sh
+    - 02_static_pod.sh
+    - 03_kubeadm_init.sh

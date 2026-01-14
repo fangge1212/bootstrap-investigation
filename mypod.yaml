@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-static
+  namespace: kube-system
+spec:
+  containers:
+  - name: hello
+    image: busybox
+    command: ["sh", "-c", "while true; do sleep 60; done"]

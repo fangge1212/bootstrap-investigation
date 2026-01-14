@@ -1,0 +1,23 @@
+autostart: false
+creationdate: 18-12-2025 05:42
+disks:
+- device: vda
+  format: virtio
+  path: /var/lib/libvirt/images/testvm1_0.img
+  size: 10
+  type: qcow2
+id: f387dc3f-1526-4667-8efb-b50cd775d972
+image: /var/lib/libvirt/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2
+ip: 192.168.122.55
+memory: 512
+name: testvm1
+nets:
+- device: eth0
+  mac: 52:54:00:cd:45:a0
+  net: default
+  type: routed
+numcpus: 2
+plan: kvirt
+profile: Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2
+status: up
+user: fedora

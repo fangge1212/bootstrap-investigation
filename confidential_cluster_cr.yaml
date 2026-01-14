@@ -1,0 +1,12 @@
+apiVersion: confidential-clusters.io/v1alpha1
+kind: ConfidentialCluster
+metadata:
+  name: confidential-cluster
+  namespace: kube-system
+spec:
+  trusteeImage: quay.io/confidential-clusters/key-broker-service:tpm-verifier-built-in-as-20250711
+  pcrsComputeImage: quay.io/rhn_support_fjin/compute-pcrs:latest
+  registerServerImage: quay.io/rhn_support_fjin/registration-server:latest
+  publicTrusteeAddr: 192.168.122.53
+  registerServerPort: 8001
+  trusteeKbsPort: 8080

@@ -1,0 +1,10 @@
+plan: test
+parameters:
+  domain: lab.local
+  image: /var/lib/libvirt/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2
+  sshkey: /root/.ssh/id_ed25519.pub
+
+vms:
+  - name: test-vm
+    memory: 1024
+    numcpus: 1
