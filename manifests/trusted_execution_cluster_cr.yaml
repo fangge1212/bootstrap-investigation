@@ -1,0 +1,10 @@
+apiVersion: trusted-execution-clusters.io/v1alpha1
+kind: TrustedExecutionCluster
+metadata:
+  name: trusted-execution-cluster
+  namespace: trusted-execution-clusters
+spec:
+  pcrsComputeImage: quay.io/rhn_support_fjin/compute-pcrs:latest
+  registerServerImage: quay.io/rhn_support_fjin/registration-server:latest
+  trusteeImage: quay.io/trusted-execution-clusters/key-broker-service:tpm-verifier-built-in-as-20250711
+  publicTrusteeAddr: 192.168.122.53:8080
