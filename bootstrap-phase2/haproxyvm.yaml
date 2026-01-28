@@ -1,0 +1,18 @@
+autostart: false
+creationdate: 18-12-2025 05:42
+disks:
+- device: vda
+  format: virtio
+  path: /var/lib/libvirt/images/haproxy.img
+  size: 10
+  type: qcow2
+id: f387dc3f-1526-4667-8efb-b50cd775d972
+image: /var/lib/libvirt/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2
+ip: 192.168.122.251
+memory: 1024
+name: haproxy
+nets:
+- device: eth0
+  mac: 52:54:00:cd:45:a0
+  net: default
+numcpus: 1

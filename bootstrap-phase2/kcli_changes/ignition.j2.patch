@@ -1,0 +1,33 @@
+{% if bucket_url is defined %}
+{% set url = bucket_url %}
+{% else %}
+{% set address = api_ip if api_ip != None else "api." + cluster + "." + original_domain|default(domain) %}
+{% if ':' in address %}
+{% set address = "[" + api_ip + "]" %}
+{% endif %}
+{% set url = "http://" + address + ":22624/config/" + role|default('worker') %}
+{% endif %}
+{
+  "ignition": {
+{% if ca_file is defined %}
+    "security": {
+      "tls": {
+        "certificateAuthorities": [{
+          "source": "data:text/plain;charset=utf-8;base64,{{ ca_file | real_path | read_file | base64 }}"
+        }]
+      }
+    },
+{% endif %}
+    "config": {
+      "merge": [
+        {
+          "source": "{{ url }}"
+        }{% if custom_sources is defined and custom_sources|length > 0 %}{% for src in custom_sources %},
+        {
+          "source": "{{ src }}"
+        }{% endfor %}{% endif %}
+      ]
+    },
+    "version": "{{ ignition_version|default('3.2.0') }}"
+  }
+}

@@ -1,0 +1,16 @@
+cluster: test
+image: /var/lib/libvirt/images/centos-stream-coreos-10.0.20260113-0-qemu.x86_64.qcow2
+domain: confidential-cluster.org
+version: stable
+tag: '4.21'
+ctlplanes: 1
+workers: 0
+memory: 20480
+numcpus: 16
+okd: true
+worker_memory: 8192
+autologin: true
+vmrules:
+  - test:
+      tpm: true
+pub_key: /home/fjin/.ssh/okd.pub
