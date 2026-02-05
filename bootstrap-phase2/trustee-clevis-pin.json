@@ -1,6 +1,14 @@
 {
   "remote_ignition": {
-    "url": "http://10.73.211.28:8001/ignition-clevis-pin-trustee",
+    "url": "http://10.73.211.28:8000/ignition-clevis-pin-trustee",
     "certificate": ""
+  },
+  "attestation": {
+    "attestation_key": {
+      "registration": {
+        "url": "http://10.73.211.28:9001/register-ak",
+        "certificate": ""
+      }
+    }
   }
 }
