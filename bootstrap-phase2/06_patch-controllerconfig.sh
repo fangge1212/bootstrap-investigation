@@ -30,7 +30,7 @@ wait_for_mcc() {
                -o BatchMode=yes \
                -o StrictHostKeyChecking=no \
                "${SSH_USER}@${IP}" \
-               "sudo test -f /etc/mcc/bootstrap/machineconfigcontroller-controllerconfig.yaml" &>/dev/null; then
+               "sudo test -d /etc/mcs/bootstrap/machine-configs/" &>/dev/null; then
             echo "ControllerConfig manifest found."
             return 0
         fi
@@ -57,7 +57,7 @@ CONTROLLERCONFIG="/etc/mcc/bootstrap/machineconfigcontroller-controllerconfig.ya
 sudo cp "$CONTROLLERCONFIG" "${CONTROLLERCONFIG}.backup"
 
 # Patch baseOSContainerImage to use custom SCOS image with trustee support
-sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:92de86e00311c5145eda6b4eeb4a8ea21148eec46d294d60c702ce63359942bd|' "$CONTROLLERCONFIG"
+sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' /etc/mcs/bootstrap/machine-configs/* "$CONTROLLERCONFIG"
 
 echo "ControllerConfig patched successfully"
 echo "baseOSContainerImage:"
