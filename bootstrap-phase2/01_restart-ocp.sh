@@ -3,6 +3,7 @@
 set -euo pipefail
 
 VM_NAME="test-bootstrap"
+VM_BASE_IMAGE="/var/lib/libvirt/images/centos-stream-coreos-10.0.20251113-0-qemu.x86_64.qcow2"
 
 wait_for_vm_created() {
     local vm="$1"
@@ -35,5 +36,5 @@ sleep 2
 UUID="$(virsh domuuid $VM_NAME)"
 rm /var/lib/libvirt/swtpm/$UUID -rf
 rm /var/lib/libvirt/images/test-bootstrap_0.img -f
-qemu-img create -f qcow2 /var/lib/libvirt/images/test-bootstrap_0.img -b /var/lib/libvirt/images/centos-stream-coreos-10.0.20260113-0-qemu.x86_64.qcow2 60G -F qcow2
+qemu-img create -f qcow2 /var/lib/libvirt/images/test-bootstrap_0.img -b $VM_BASE_IMAGE 60G -F qcow2
 virsh start $VM_NAME

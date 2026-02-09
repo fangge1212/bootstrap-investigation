@@ -4,7 +4,6 @@ set -e
 
 VM="test-bootstrap"
 SSH_USER="core"
-CUSTOM_IMAGE="quay.io/rhn_support_fjin/scos@sha256:b33b351605b4df41a03c86249ab43e14e4755be7edd0cde97794da93acbfc10b"
 
 echo "=== Patching ControllerConfig on bootstrap node ==="
 
@@ -51,13 +50,14 @@ wait_for_mcc
 # Patch the controllerconfig.yaml to use custom image
 echo "Patching ControllerConfig to use custom SCOS image..."
 ssh -o StrictHostKeyChecking=no "${SSH_USER}@${IP}" bash <<'EOF'
+CUSTOM_IMAGE="quay.io/rhn_support_fjin/scos@sha256:92de86e00311c5145eda6b4eeb4a8ea21148eec46d294d60c702ce63359942bd"
 CONTROLLERCONFIG="/etc/mcc/bootstrap/machineconfigcontroller-controllerconfig.yaml"
 
 # Backup original
 sudo cp "$CONTROLLERCONFIG" "${CONTROLLERCONFIG}.backup"
 
 # Patch baseOSContainerImage to use custom SCOS image with trustee support
-sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:b33b351605b4df41a03c86249ab43e14e4755be7edd0cde97794da93acbfc10b|' "$CONTROLLERCONFIG"
+sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:92de86e00311c5145eda6b4eeb4a8ea21148eec46d294d60c702ce63359942bd|' "$CONTROLLERCONFIG"
 
 echo "ControllerConfig patched successfully"
 echo "baseOSContainerImage:"

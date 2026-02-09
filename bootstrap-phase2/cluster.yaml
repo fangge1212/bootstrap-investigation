@@ -1,5 +1,5 @@
 cluster: test
-image: /var/lib/libvirt/images/centos-stream-coreos-10.0.20260113-0-qemu.x86_64.qcow2
+image: /var/lib/libvirt/images/centos-stream-coreos-10.0.20251113-0-qemu.x86_64.qcow2
 domain: confidential-cluster.org
 version: stable
 tag: '4.21'
