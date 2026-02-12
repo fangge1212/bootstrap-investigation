@@ -50,14 +50,18 @@ wait_for_mcc
 # Patch the machine and controller config yaml to use custom image
 echo "Patching MachineConfig and ControllerConfig to use custom SCOS image..."
 ssh -o StrictHostKeyChecking=no "${SSH_USER}@${IP}" bash <<'EOF'
-MACHINECONFIG=/etc/mcs/bootstrap/machine-configs/
-CONTROLLERCONFIG="/etc/mcc/bootstrap/machineconfigcontroller-controllerconfig.yaml"
+MACHINECONFIG=/etc/mcs/bootstrap/machine-configs/*
+CONTROLLERCONFIG="/etc/mcs/bootstrap/controller-config/machine-config-controller.yaml"
+CONTROLLERCONFIG1="/etc/mcc/bootstrap/machineconfigcontroller-controllerconfig.yaml"
 
 # Patch osImageURL and baseOSContainerImage to use custom SCOS image with trustee support
 sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' /etc/mcs/bootstrap/machine-configs/*
+sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' /etc/mcs/bootstrap/machine-configs/*
 echo "MachineConfig osImageURL patched successfully"
-sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' /etc/mcc/bootstrap/machineconfigcontroller-controllerconfig.yaml
-sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' /etc/mcc/bootstrap/machineconfigcontroller-controllerconfig.yaml
+sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG"
+sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG"
+sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG1"
+sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG1"
 echo "ControllerConfig patched successfully"
 
 echo "Verification:"
