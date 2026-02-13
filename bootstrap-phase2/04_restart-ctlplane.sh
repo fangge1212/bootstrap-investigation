@@ -7,9 +7,7 @@ VM_BASE_IMAGE="/var/lib/libvirt/images/centos-stream-coreos-10.0.20251113-0-qemu
 
 wait_for_vm_created() {
     local vm="$1"
-    local timeout=120
     local interval=3
-    local elapsed=0
 
     echo "Waiting for VM '$vm' to be created..."
 
@@ -20,12 +18,6 @@ wait_for_vm_created() {
         fi
 
         sleep "$interval"
-        elapsed=$((elapsed + interval))
-
-        if [[ "$elapsed" -ge "$timeout" ]]; then
-            echo "ERROR: VM '$vm' was not created within timeout."
-            return 1
-        fi
     done
 }
 

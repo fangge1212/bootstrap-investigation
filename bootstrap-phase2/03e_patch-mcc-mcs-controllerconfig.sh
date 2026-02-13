@@ -19,9 +19,7 @@ echo "VM $VM IP: $IP"
 
 # Wait for MCC to be available
 wait_for_mcc() {
-    local timeout=600
     local interval=5
-    local elapsed=0
 
     echo "Waiting for Machine Config Controller to be ready..."
 
@@ -36,12 +34,6 @@ wait_for_mcc() {
         fi
 
         sleep "$interval"
-        elapsed=$((elapsed + interval))
-
-        if [[ "$elapsed" -ge "$timeout" ]]; then
-            echo "ERROR: Timeout waiting for MachineConfig."
-            return 1
-        fi
     done
 }
 

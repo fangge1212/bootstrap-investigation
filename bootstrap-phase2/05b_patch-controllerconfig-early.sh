@@ -10,9 +10,7 @@ CUSTOM_OSIMAGE="quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6
 echo "=== Waiting for cluster API to be available ==="
 
 wait_for_api() {
-    local timeout=1200  # 20 minutes
     local interval=5
-    local elapsed=0
 
     while true; do
         if oc get nodes &>/dev/null 2>&1; then
@@ -20,14 +18,8 @@ wait_for_api() {
             return 0
         fi
 
-        echo "Waiting for API... ($elapsed/$timeout seconds)"
+        echo "Waiting for API..."
         sleep "$interval"
-        elapsed=$((elapsed + interval))
-
-        if [ $elapsed -ge $timeout ]; then
-            echo "✗ Timeout waiting for API"
-            return 1
-        fi
     done
 }
 
@@ -37,9 +29,7 @@ echo ""
 echo "=== Waiting for ControllerConfig to be created ==="
 
 wait_for_controllerconfig() {
-    local timeout=300
     local interval=5
-    local elapsed=0
 
     while true; do
         if oc get controllerconfig machine-config-controller &>/dev/null 2>&1; then
@@ -47,14 +37,8 @@ wait_for_controllerconfig() {
             return 0
         fi
 
-        echo "Waiting for ControllerConfig... ($elapsed/$timeout seconds)"
+        echo "Waiting for ControllerConfig..."
         sleep "$interval"
-        elapsed=$((elapsed + interval))
-
-        if [ $elapsed -ge $timeout ]; then
-            echo "✗ Timeout waiting for ControllerConfig"
-            return 1
-        fi
     done
 }
 

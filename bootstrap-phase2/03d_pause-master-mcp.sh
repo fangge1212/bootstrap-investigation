@@ -26,17 +26,10 @@ MCP_FILE="/etc/mcs/bootstrap/machine-pools/master.yaml"
 
 # Wait for the file to appear
 echo "Waiting for MachineConfigPool file to appear..."
-TIMEOUT=300
-ELAPSED=0
 INTERVAL=2
 
 while ! sudo test -f "$MCP_FILE"; do
     sleep $INTERVAL
-    ELAPSED=$((ELAPSED + INTERVAL))
-    if [ $ELAPSED -ge $TIMEOUT ]; then
-        echo "ERROR: Timeout waiting for MachineConfigPool file: $MCP_FILE"
-        exit 1
-    fi
 done
 
 echo "MachineConfigPool file found: $MCP_FILE"
@@ -55,7 +48,7 @@ echo "MachineConfigPool patched successfully"
 
 echo ""
 echo "Verification - MachineConfigPool spec.paused:"
-sudo grep -A1 "^spec:" "$MCP_FILE" | grep "paused"
+sudo grep  "paused" "$MCP_FILE"
 EOF
 
 echo ""

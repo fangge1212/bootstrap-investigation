@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# This is to workaround a bug: https://github.com/okd-project/okd/issues/2296
 set -euo pipefail
 
 HAPROXY_VM_IP="192.168.122.112"
