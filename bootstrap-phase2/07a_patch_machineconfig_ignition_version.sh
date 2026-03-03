@@ -1,5 +1,9 @@
 #!/bin/bash
 # Script to patch MachineConfig ignition versions to 3.5.0
+# oc describe co machine-config
+#    Master:  pool is degraded because rendering fails with "": "Failed to render configuration for pool master: could not generate rendered MachineConfig: parsing Ignition config failed: unknown version. Supported spec versions: 2.2,3.0,3.1,3.2,3.3,3.4,3.5"
+#    Worker:  pool is degraded because rendering fails with "": "Failed to render configuration for pool worker: could not generate rendered MachineConfig: parsing Ignition config failed: unknown version. Supported spec versions: 2.2,3.0,3.1,3.2,3.3,3.4,3.5"
+
 
 set -e
 

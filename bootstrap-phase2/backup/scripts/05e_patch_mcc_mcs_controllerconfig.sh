@@ -52,8 +52,8 @@ sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support
 echo "MachineConfig osImageURL patched successfully"
 sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG"
 sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG"
-sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG1"
-sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG1"
+# sudo sed -i 's|osImageURL:.*|osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG1"
+# sudo sed -i 's|baseOSContainerImage:.*|baseOSContainerImage: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5|' "$CONTROLLERCONFIG1"
 echo "ControllerConfig patched successfully"
 
 echo "Verification:"

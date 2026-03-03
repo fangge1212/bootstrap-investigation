@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to get VM IP, SSH to it, and run a command
+# Workaround https://github.com/okd-project/okd/issues/2296
 
 VM="test-bootstrap"          # VM name
 SSH_USER="core"              # username for SSH

@@ -9,6 +9,7 @@ vmrules:
   - test:
       tpm: true
 pub_key: /home/fjin/.ssh/okd.pub
+manifests: /home/fjin/bootstrap-investigation/bootstrap-phase2/manifests
 
 ctlplanes: 1
 workers: 0
@@ -17,10 +18,3 @@ numcpus: 16
 bootstrap_memory: 16384
 bootstrap_vcpus: 8
 bootstrap_mac: "52:54:00:aa:bb:01"
-
-nodes:
-  - name: test-ctlplane-0
-    type: master
-    memory: 16384
-    numcpus: 16
-    mac: "52:54:00:aa:bb:02"

@@ -1,5 +1,6 @@
 #!/bin/bash
-# Script to get VM IP, SSH to it, and run a command
+# Because the current mco doesn't ignition 3.6.0-experimental, so we need to
+# SSH to bootstrap node, modify the ignition version in Machine Config Controller bootstrap manifests.
 
 VM="test-bootstrap"          # VM name
 SSH_USER="core"              # username for SSH
