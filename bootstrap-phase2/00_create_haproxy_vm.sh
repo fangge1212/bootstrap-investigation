@@ -157,8 +157,6 @@ echo "=== haproxy VM setup complete ==="
 echo "VM IP: $ACTUAL_IP"
 echo "VIP: $VIP (used for both API and Ingress)"
 echo ""
-echo "Add the following to your client machine's /etc/hosts:"
-echo "  ${VIP} api.test.confidential-cluster.org api-int.test.confidential-cluster.org apps.test.confidential-cluster.org"
 
 # Clean up temp file
 rm -f /tmp/haproxy-k8s.cfg
