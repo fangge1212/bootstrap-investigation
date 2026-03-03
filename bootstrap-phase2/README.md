@@ -13,9 +13,11 @@ This guide helps you create an OpenShift confidential cluster using the provided
 - OpenShift installer binary (`openshift-install`)
 - `oc` CLI tool for image inspection
 - `just` command runner (for building CoreOS image)
+- **External Trustee Server** - Required for confidential computing attestation
+  - Must be accessible from the cluster nodes
 - Required base images:
-  - Fedora Cloud Base: `/var/lib/libvirt/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2`
-  - CentOS Stream CoreOS: `/var/lib/libvirt/images/centos-stream-coreos-10.0.20251113-0-qemu.x86_64.qcow2`
+  - Fedora Cloud Base(used as base vm image for haproxy server): `/var/lib/libvirt/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2`
+  - CentOS Stream CoreOS(used as base vm image for cluster node): `/var/lib/libvirt/images/centos-stream-coreos-10.0.20251113-0-qemu.x86_64.qcow2`
     - See [Building CentOS Stream CoreOS](#building-centos-stream-coreos) section below for build instructions
 
 ## Building CentOS Stream CoreOS
@@ -120,7 +122,19 @@ Edit `cluster.yaml` to customize your cluster settings:
 
 **trustee-clevis-pin.json**
 
-The `trustee-clevis-pin.json` file contains the Clevis pin configuration for disk encryption with Trustee attestation. This file is passed to `openshift-install` as an environment variable.
+The `trustee-clevis-pin.json` file contains the Clevis pin configuration for disk encryption with Trustee attestation. This file is passed to `openshift-install` as an environment variable during cluster creation.
+
+This file configures:
+- **Attestation Key Registration URL**: The Trustee server endpoint for attestation key registration (e.g., `http://10.73.211.28:9001/register-ak`)
+- **Remote Ignition URL**: The URL where ignition configurations can be fetched remotely
+
+**Important**: Update the attestation and ignition URLs in `trustee-clevis-pin.json` to match your Trustee server before creating the cluster.
+
+**Note**: The attestation key registration URL is also configured in:
+- `02_restart_bootstrap.sh` - For bootstrap node attestation
+- `06_restart_ctlplane.sh` - For control plane node attestation
+
+If you change the Trustee server URL, update it in all three locations.
 
 **Manifest Files**
 
@@ -158,7 +172,9 @@ This script:
 - Destroys the bootstrap VM
 - Backs up the original ignition file
 - Updates ignition version to 3.6.0-experimental
-- Adds attestation configuration for confidential computing
+- Adds attestation configuration for confidential computing:
+  - Configures attestation key registration URL (default: `http://10.73.211.28:9001/register-ak`)
+  - Update the URL in the script if using a different Trustee server
 - Cleans up TPM state
 - Recreates the bootstrap VM with fresh storage
 
@@ -220,7 +236,9 @@ This script:
 - Destroys the control plane VM
 - Backs up the original ignition file
 - Updates ignition version to 3.6.0-experimental
-- Adds attestation configuration
+- Adds attestation configuration:
+  - Configures attestation key registration URL (default: `http://10.73.211.28:9001/register-ak`)
+  - Update the URL in the script if using a different Trustee server
 - Cleans up TPM state and storage
 - Recreates the control plane VM
 
