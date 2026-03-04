@@ -33,39 +33,10 @@ echo "Creating backup: $BACKUP_FILE"
 cp "$BOOTSTRAP_IGN" "$BACKUP_FILE"
 
 echo "=== Update ignition version in $BOOTSTRAP_IGN ==="
-sed -i s/3.2.0/3.6.0-experimental/  $BOOTSTRAP_IGN
+NEW_VERSION="3.6.0-experimental"
+jq --arg new_ver "$NEW_VERSION" '.ignition.version = $new_ver' "$BOOTSTRAP_IGN" > "${BOOTSTRAP_IGN}.tmp" && mv "${BOOTSTRAP_IGN}.tmp" "$BOOTSTRAP_IGN"
 echo "=== Updated ignition version ==="
 
-echo "=== Adding attestation configuration to $BOOTSTRAP_IGN ==="
-# Add attestation section using jq
-echo "Adding attestation configuration..."
-jq '. + {
-    "attestation": {
-        "attestation_key": {
-            "registration": {
-                "certificat": "",
-                "url": "http://10.73.211.28:9001/register-ak"
-            }
-        }
-    }
-}' "$BOOTSTRAP_IGN" > "${BOOTSTRAP_IGN}.tmp"
-
-# Validate the result is valid JSON
-if jq empty "${BOOTSTRAP_IGN}.tmp" 2>/dev/null; then
-    mv "${BOOTSTRAP_IGN}.tmp" "$BOOTSTRAP_IGN"
-    echo "✓ Successfully added attestation configuration"
-else
-    echo "✗ Error: Generated invalid JSON"
-    rm -f "${BOOTSTRAP_IGN}.tmp"
-    exit 1
-fi
-
-# Show the attestation section
-echo ""
-echo "Added attestation configuration:"
-jq '.attestation' "$BOOTSTRAP_IGN"
-
-echo ""
 echo "=== Complete ==="
 echo "Backup saved to: $BACKUP_FILE"
 
