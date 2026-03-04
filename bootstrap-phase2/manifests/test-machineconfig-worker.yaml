@@ -5,4 +5,4 @@ metadata:
     machineconfiguration.openshift.io/role: worker
   name: 99-custom-osimage-worker
 spec:
-  osImageURL: quay.io/rhn_support_fjin/scos@sha256:c6cee984d9610b70a1bd1600bf6ce798e04542227690cc24ae4b41620ac4d0e5
+  osImageURL: quay.io/rhn_support_fjin/scos@sha256:9acdb0337ee79baae875b3335c6f0384e17056de106fb59eb9706b32d73cad82
