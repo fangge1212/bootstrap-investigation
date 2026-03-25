@@ -10,7 +10,7 @@ wait_for_vm_ssh() {
     local vm_ip="$1"
     local interval=5
 
-    echo "Waiting for VM $vm_ip to be reachable via SSH..."
+    echo "Waiting for bootstrap VM to be reachable via SSH..."
 
     while true; do
         if ssh -o ConnectTimeout=3 \

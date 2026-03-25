@@ -10,19 +10,19 @@ This guide helps you create an OpenShift confidential cluster using the provided
   - Verify installation: `kcli list vms`
   - Ensure default libvirt connection is working
 - SSH key pair generated (`~/.ssh/id_rsa.pub` or `~/.ssh/id_ed25519.pub`)
-- OpenShift installer binary (`openshift-install`)
+- OpenShift installer binary (`openshift-install`) with node attestation support
+  - Build it from https://github.com/fangge1212/openshift-installer/tree/confidential_cluster_config
 - `oc` CLI tool for image inspection
 - `just` command runner (for building CoreOS image)
 - **External Trustee Server** - Required for confidential computing attestation
   - Must be accessible from the cluster nodes
 - Required base images:
-  - Fedora Cloud Base(used as base vm image for haproxy server): `/var/lib/libvirt/images/Fedora-Cloud-Base-Generic-43-1.6.x86_64.qcow2`
   - CentOS Stream CoreOS(used as base vm image for cluster node): `/var/lib/libvirt/images/centos-stream-coreos-10.0.20251113-0-qemu.x86_64.qcow2`
     - See [Building CentOS Stream CoreOS](#building-centos-stream-coreos) section below for build instructions
 
 ## Building CentOS Stream CoreOS
 
-The CentOS Stream CoreOS (SCOS) image with confidential computing support is built following the instructions from [trusted-execution-clusters/investigations/coreos](https://github.com/trusted-execution-clusters/investigations/tree/main/coreos).
+The CentOS Stream CoreOS (SCOS) image with remote attestation support is built following the instructions from [trusted-execution-clusters/investigations/coreos](https://github.com/trusted-execution-clusters/investigations/tree/main/coreos).
 
 ### Build Steps
 
@@ -75,26 +75,6 @@ The CentOS Stream CoreOS (SCOS) image with confidential computing support is bui
 
 ## Installation Steps
 
-### Step 0: Create HAProxy Load Balancer
-
-```bash
-sudo ./00_create_haproxy_vm.sh
-```
-
-**Purpose**: Creates and configures the load balancer for the cluster.
-
-This script:
-- Creates a Fedora VM for HAProxy
-- Installs and configures HAProxy
-- Sets up VIP (192.168.122.252) for both API and Ingress
-- Configures load balancing for:
-  - Kubernetes API (port 6443)
-  - Machine Config Server (port 22624)
-  - Ingress HTTP/HTTPS (ports 80/443)
-
-
----
-
 ### Step 1: Create the Cluster
 
 #### Configuration Files
@@ -131,10 +111,9 @@ This file configures:
 **Important**: Update the attestation and ignition URLs in `trustee-clevis-pin.json` to match your Trustee server before creating the cluster.
 
 **Note**: The attestation key registration URL is also configured in:
-- `02_restart_bootstrap.sh` - For bootstrap node attestation
-- `06_restart_ctlplane.sh` - For control plane node attestation
+- `04_restart_ctlplane.sh` - For control plane node attestation
 
-If you change the Trustee server URL, update it in all three locations.
+If you change the Trustee server URL, update it in both locations.
 
 **Manifest Files**
 
@@ -160,74 +139,32 @@ This script:
 
 ---
 
-### Step 2: Restart Bootstrap
+### Step 2: Remove CNI from Bootstrap
 
 ```bash
-sudo ./02_restart_bootstrap.sh
-```
-
-**Purpose**: Recreates the bootstrap VM with updated ignition configuration and attestation support.
-
-This script:
-- Destroys the bootstrap VM
-- Backs up the original ignition file
-- Updates ignition version to 3.6.0-experimental
-- Adds attestation configuration for confidential computing:
-  - Configures attestation key registration URL (default: `http://10.73.211.28:9001/register-ak`)
-  - Update the URL in the script if using a different Trustee server
-- Cleans up TPM state
-- Recreates the bootstrap VM with fresh storage
-
----
-
-### Step 3: Update DHCP Configuration
-
-```bash
-sudo ./03_update_dhcp_default.sh
-```
-
-**Purpose**: Configures DHCP reservations to ensure node IP addresses persist across reboots.
-
-Updates the default libvirt network DHCP configuration for cluster nodes.
-
----
-
-### Step 4: Update HAProxy Configuration
-
-```bash
-sudo ./04_update_haproxy.sh
-```
-
-**Purpose**: Updates HAProxy backend server configuration if node IPs change.
-
----
-
-### Step 5a: Remove CNI from Bootstrap
-
-```bash
-sudo ./05a_rm_cni_bootstrap.sh
+sudo ./02_rm_cni_bootstrap.sh
 ```
 
 **Purpose**: Removes CNI configuration from the bootstrap node to workaround a bug in the SCOS image.
 
 ---
 
-### Step 5c: Patch MCC Ignition Version
+### Step 3: Patch MCC Ignition Version
 
 ```bash
-sudo ./05c_patch_mcc_ignition_version.sh
+sudo ./03_patch_mcc_ignition_version.sh
 ```
 
 **Purpose**: Patches the Machine Config Controller ignition version for compatibility.
 
-Machine Config Operator doesn't support ignition version 3.6.0-experimental, so this script modifies the ignition version in MCC bootstrap manifests from 3.6.0-experimental to 3.5.0, preventing MCC bootstrap failures.
+Machine Config Operator doesn't support ignition version 3.6.0, so this script modifies the ignition version in MCC bootstrap manifests from 3.6.0 to 3.5.0, preventing MCC bootstrap failures.
 
 ---
 
-### Step 6: Restart Control Plane
+### Step 4: Restart Control Plane
 
 ```bash
-sudo ./06_restart_ctlplane.sh
+sudo ./04_restart_ctlplane.sh
 ```
 
 **Purpose**: Recreates the control plane VM with updated ignition configuration and attestation support.
@@ -235,7 +172,7 @@ sudo ./06_restart_ctlplane.sh
 This script:
 - Destroys the control plane VM
 - Backs up the original ignition file
-- Updates ignition version to 3.6.0-experimental
+- Updates ignition version to 3.6.0
 - Adds attestation configuration:
   - Configures attestation key registration URL (default: `http://10.73.211.28:9001/register-ak`)
   - Update the URL in the script if using a different Trustee server
@@ -244,22 +181,32 @@ This script:
 
 ---
 
-### Step 7a: Patch MachineConfig Ignition Version
+### Step 5: Restart Worker
 
 ```bash
-sudo ./07a_patch_machineconfig_ignition_version.sh
+sudo ./05_restart_worker.sh
+```
+
+**Purpose**: Recreates the worker VM with updated ignition configuration and attestation support.
+
+---
+
+### Step 6: Patch MachineConfig Ignition Version
+
+```bash
+sudo ./06_patch_machineconfig_ignition_version.sh
 ```
 
 **Purpose**: Patches ignition version in MachineConfig resources for MCO compatibility.
 
-Machine Config Operator doesn't support 3.6.0-experimental, so this script modifies the ignition version in MachineConfig resources from 3.6.0-experimental to 3.5.0, allowing MCO to start successfully.
+Machine Config Operator doesn't support 3.6.0, so this script modifies the ignition version in MachineConfig resources from 3.6.0 to 3.5.0, allowing MCO to start successfully.
 
 ---
 
-### Step 7c: Pause Master MCP
+### Step 7: Pause Master MCP
 
 ```bash
-sudo ./07c_pause_master_mcp_incluster.sh
+sudo ./07_pause_master_mcp_incluster.sh
 ```
 
 **Purpose**: Pauses the master Machine Config Pool to prevent automatic updates during cluster configuration.
@@ -275,6 +222,16 @@ sudo ./08_delete_cluster.sh
 ```
 
 **Purpose**: Destroys all cluster VMs and cleans up resources.
+
+---
+
+### Step 9: Cleanup Operator Resources
+
+```bash
+sudo ./09_cleanup_operator_resources.sh
+```
+
+**Purpose**: Cleans up operator-related resources after cluster deletion.
 
 ---
 ## Troubleshooting
@@ -296,26 +253,19 @@ If scripts fail with SSH errors:
 ### Network Issues
 - Verify libvirt default network is active: `virsh net-list --all`
 - Start network if inactive: `virsh net-start default`
-- Check HAProxy status: `ssh root@<HAPROXY_VM_IP> "systemctl status haproxy"`
-- Verify VIP is configured: `ssh root@<HAPROXY_VM_IP> "ip addr show dev ens3"`
-- Test connectivity: `nc -zv 192.168.122.252 6443`
 
 ### Bootstrap Hangs
 - Check bootstrap logs: `ssh core@192.168.122.56 "journalctl -u bootkube -f"`
 - Monitor bootstrap progress: `openshift-install wait-for bootstrap-complete --log-level=debug`
-- Check for CNI issues: Run step 5a to remove CNI configuration
-- Verify MCC ignition version: Run step 5c to patch ignition version
+- Check for CNI issues: Run step 2 to remove CNI configuration
+- Verify MCC ignition version: Run step 3 to patch ignition version
+- Check the failed containers on bootstrap node and their logs: `sudo crictl ps -a`, `sudo crictl logs <CONTAINER_ID>`
 
 ### Ignition/Attestation Issues
 - Verify ignition files exist: `ls -lh *.ign`
 - Check ignition version: `jq '.ignition.version' <ignition-file>.ign`
 - Verify attestation configuration: `jq '.attestation' <ignition-file>.ign`
 - Check TPM state on VM: `ssh core@<vm_ip> "tpm2_getcap properties-fixed"`
-
-### HAProxy Load Balancer Issues
-- Verify HAProxy configuration: `ssh root@<HAPROXY_VM_IP> "haproxy -c -f /etc/haproxy/haproxy.cfg"`
-- Check backend status: `ssh root@<HAPROXY_VM_IP> "echo 'show stat' | socat stdio /run/haproxy/admin.sock"`
-- Review logs: `ssh root@<HAPROXY_VM_IP> "journalctl -u haproxy -f"`
 
 ## Additional Resources
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Because the current mco doesn't ignition 3.6.0-experimental, so we need to
+# The current MCO doesn't ignition 3.6.0-experimental, to unblock the bootstrap process, we need to
 # SSH to bootstrap node, modify the ignition version in Machine Config Controller bootstrap manifests.
 
 VM="test-bootstrap"          # VM name
@@ -10,7 +10,7 @@ wait_for_mcc() {
     local vm_ip="$1"
     local interval=5
 
-    echo "Waiting for dir /etc/mcc to appear on VM $vm_ip"
+    echo "Waiting for dir /etc/mcc to appear on bootstrap VM"
 
     while true; do
         if ssh -o ConnectTimeout=3 \

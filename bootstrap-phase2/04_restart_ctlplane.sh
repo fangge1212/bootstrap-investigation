@@ -23,12 +23,16 @@ wait_for_vm_created() {
 
 wait_for_vm_created "$VM_NAME"
 
+echo ""
+echo "=== Stopping VM '$VM_NAME' ==="
 virsh destroy $VM_NAME || true
 sleep 2
+echo "VM '$VM_NAME' stopped successfully"
 
+echo ""
+echo "=== Backing up ignition configuration ==="
 CTLPLANE_IGN="/var/lib/libvirt/images/test-ctlplane-0.ign"
 BACKUP_FILE="/var/lib/libvirt/images/test-ctlplane-0.ign.bak"
-# Create backup
 echo "Creating backup: $BACKUP_FILE"
 cp "$CTLPLANE_IGN" "$BACKUP_FILE"
 
@@ -38,11 +42,23 @@ jq --arg new_ver "$NEW_VERSION" '.ignition.version = $new_ver' "$CTLPLANE_IGN" >
 echo "=== Updated ignition version ==="
 
 echo ""
-echo "=== Complete ==="
+echo "=== Ignition configuration update complete ==="
 echo "Backup saved to: $BACKUP_FILE"
 
+echo ""
+echo "=== Cleaning up VM resources ==="
 UUID="$(virsh domuuid test-ctlplane-0)"
+echo "Removing TPM data for UUID: $UUID"
 rm /var/lib/libvirt/swtpm/$UUID -rf
+echo "Removing old disk image"
 rm /var/lib/libvirt/images/test-ctlplane-0_0.img -f
+echo "Creating new disk image based on: $VM_BASE_IMAGE"
 qemu-img create -f qcow2 /var/lib/libvirt/images/test-ctlplane-0_0.img -b $VM_BASE_IMAGE 60G -F qcow2
+echo "Disk image created successfully"
+
+echo ""
+echo "=== Starting VM '$VM_NAME' ==="
 virsh start $VM_NAME
+echo "VM '$VM_NAME' started successfully"
+echo ""
+echo "=== Script complete ==="

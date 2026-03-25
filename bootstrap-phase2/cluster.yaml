@@ -12,7 +12,7 @@ pub_key: /home/fjin/.ssh/okd.pub
 manifests: /home/fjin/bootstrap-investigation/bootstrap-phase2/manifests
 
 ctlplanes: 1
-workers: 0
+workers: 1
 memory: 20480
 numcpus: 16
 bootstrap_memory: 16384
