@@ -1,4 +1,4 @@
-# OpenShift Confidential Cluster Bootstrap Guide
+06_pause_master_mcp_incluster.sh# OpenShift Confidential Cluster Bootstrap Guide
 
 This guide helps you create an OpenShift confidential cluster using the provided automation scripts.
 
@@ -46,7 +46,17 @@ The CentOS Stream CoreOS (SCOS) image with remote attestation support is built f
 
 3. **Update the Build Script**
 
-   Replace the image in the [justfile](https://github.com/trusted-execution-clusters/investigations/blob/main/coreos/justfile#L3) with the image SHA obtained from step 2.
+   Update the following variables in the [justfile](https://github.com/trusted-execution-clusters/investigations/blob/main/coreos/justfile#L3):
+
+   ```makefile
+   # Replace with the image SHA obtained from step 2
+   scos_base_img := "quay.io/okd/scos-content@sha256:0c00cdfc08c157bba474f9f0e40870782bed71e86a03f883227ed1c79def531e"
+
+   # Required trustee and clevis images
+   kbc_image := "quay.io/trusted-execution-clusters/trustee-attester:centos-stream-standard-v0.17.0"
+   clevis_pin_trustee_image := "quay.io/trusted-execution-clusters/clevis-pin-trustee:centos-stream-75015a5"
+   ignition_image := "quay.io/trusted-execution-clusters/ignition:centos-stream-5a45ee84"
+   ```
 
 4. **Build the SCOS Image**
 
@@ -117,16 +127,59 @@ If you change the Trustee server URL, update it in both locations.
 
 **Manifest Files**
 
-The `manifests/` directory contains custom MachineConfig and other resources that will be applied during cluster installation. These manifest files reference the SCOS container image uploaded to quay.io.
+The `manifests/` directory contains custom MachineConfig and other resources that will be applied during cluster installation. You need to create this directory and MachineConfig files for master and worker nodes that reference your custom SCOS container image.
 
-If you've uploaded your SCOS image to a custom quay.io repository, update the image references in the manifest files:
+**Creating the Manifest Directory and Files:**
 
+1. **Create the manifest directory** (if it doesn't exist):
+   ```bash
+   mkdir -p manifests
+   ```
+
+2. **Create MachineConfig for master nodes** (`manifests/99-master-custom-os.yaml`):
+   ```yaml
+   apiVersion: machineconfiguration.openshift.io/v1
+   kind: MachineConfig
+   metadata:
+     labels:
+       machineconfiguration.openshift.io/role: master
+     name: 99-master-custom-os
+   spec:
+     osImageURL: quay.io/<your-username>/scos@sha256:<SHA256_VALUE>
+   ```
+
+3. **Create MachineConfig for worker nodes** (`manifests/99-worker-custom-os.yaml`):
+   ```yaml
+   apiVersion: machineconfiguration.openshift.io/v1
+   kind: MachineConfig
+   metadata:
+     labels:
+       machineconfiguration.openshift.io/role: worker
+     name: 99-worker-custom-os
+   spec:
+     osImageURL: quay.io/<your-username>/scos@sha256:<SHA256_VALUE>
+   ```
+
+**Important**:
+- Replace `<your-username>` with your quay.io username
+- Replace `<SHA256_VALUE>` with the actual SHA256 digest of your SCOS image
+- The `osImageURL` must point to the custom SCOS container image you built and pushed to quay.io in the [Building CentOS Stream CoreOS](#building-centos-stream-coreos) section
+- These MachineConfigs ensure that both master and worker nodes use your custom SCOS image with confidential computing support
+
+To get the correct manifest digest (the one shown on quay.io):
 ```bash
-# Example: Update image references in manifests
-sed -i 's|osImageURL:.*|osImageURL: quay.io/<your-username>/scos@sha256:<SHA256_VALUE>|g' manifests/*.yaml
+# Method 1: Get it from the push output
+# The digest is shown when you run: podman push quay.io/<your-username>/scos:4.21.0-okd-scos.ec.11
+
+# Method 2: Use skopeo to inspect the remote image
+skopeo inspect docker://quay.io/<your-username>/scos:4.21.0-okd-scos.ec.11 | jq -r '.Digest'
+
+# Method 3: Pull by tag and check the digest
+podman pull quay.io/<your-username>/scos:4.21.0-okd-scos.ec.11
+podman inspect quay.io/<your-username>/scos:4.21.0-okd-scos.ec.11 | jq -r '.[0].Digest'
 ```
 
-Make sure the image URL in your manifests matches the image you pushed to quay.io in the [Building CentOS Stream CoreOS](#building-centos-stream-coreos) section.
+**Note**: The manifest digest shown on quay.io web interface (under "Fetch Tag" → "Podman Pull by Digest") is the correct value to use. This is the digest of the manifest, not the local image digest.
 
 #### Run Cluster Creation
 
@@ -135,6 +188,7 @@ sudo ./01_create_cluster.sh
 ```
 
 This script:
+- Sets up environment variables for confidential cluster configuration
 - Uses `kcli` to create bootstrap and control plane VMs based on `cluster.yaml`
 
 ---
@@ -155,9 +209,18 @@ sudo ./02_rm_cni_bootstrap.sh
 sudo ./03_patch_mcc_ignition_version.sh
 ```
 
-**Purpose**: Patches the Machine Config Controller ignition version for compatibility.
+**Purpose**: Patches the Machine Config Controller ignition version for compatibility on the bootstrap node.
 
-Machine Config Operator doesn't support ignition version 3.6.0, so this script modifies the ignition version in MCC bootstrap manifests from 3.6.0 to 3.5.0, preventing MCC bootstrap failures.
+The current MCO doesn't support ignition version 3.6.0-experimental. This script:
+- SSHes into the bootstrap node
+- Modifies the ignition version in MCC bootstrap manifests from 3.6.0-experimental to 3.5.0
+- Patches the following files in `/etc/mcc/bootstrap/`:
+  - `99_openshift-machineconfig_99-worker-ssh.yaml`
+  - `99_openshift-installer-ignition_master.yaml`
+  - `99_openshift-machineconfig_99-master-ssh.yaml`
+  - `99_openshift-installer-ignition_worker.yaml`
+
+This prevents MCC from failing during bootstrap when it encounters the unsupported ignition version.
 
 ---
 
@@ -169,47 +232,98 @@ sudo ./04_restart_ctlplane.sh
 
 **Purpose**: Recreates the control plane VM with updated ignition configuration and attestation support.
 
+**Background**: kcli hardcodes the ignition version to 3.2.0 and overrides the merge source configuration. The original `master.ign` generated by openshift-install can be found at `/root/.kcli/clusters/test/master.ign.ori` for comparison.
+
 This script:
-- Destroys the control plane VM
+- Stops the control plane VM
 - Backs up the original ignition file
-- Updates ignition version to 3.6.0
-- Adds attestation configuration:
-  - Configures attestation key registration URL (default: `http://10.73.211.28:9001/register-ak`)
-  - Update the URL in the script if using a different Trustee server
-- Cleans up TPM state and storage
-- Recreates the control plane VM
+- Updates ignition version from 3.2.0 to 3.6.0-experimental
+- Adds the ignition merge source: `http://10.73.211.28:8000/ignition-clevis-pin-trustee`
+  - This restores the Clevis/Trustee configuration that kcli removed
+  - Update the URL if using a different Trustee server
+- Cleans up TPM state and disk image
+- Recreates the control plane VM with the corrected configuration
+
+The script provides detailed output at each step to track progress.
 
 ---
 
-### Step 5: Restart Worker
+### Step 5: Patch MachineConfig Ignition Version
 
 ```bash
-sudo ./05_restart_worker.sh
+sudo ./05_patch_machineconfig_ignition_version.sh
+```
+
+**Purpose**: Patches ignition version in MachineConfig cluster resources for MCO compatibility.
+
+**Why both Step 3 and Step 6?**
+- **Step 3** patches MCC manifest files on the bootstrap node's filesystem during the bootstrap phase
+- **Step 6** patches the actual MachineConfig objects in the Kubernetes cluster after the API server is up
+
+Even though Step 3 patches the source manifests, the resulting MachineConfig objects in the cluster may still have 3.6.0-experimental (from installer defaults), causing MCO to fail with:
+```
+Failed to render configuration: unknown version. Supported spec versions: 2.2,3.0,3.1,3.2,3.3,3.4,3.5
+```
+
+This script:
+- Waits for the API server to be accessible
+- Waits for MachineConfig objects to exist
+- Patches the following MachineConfigs from 3.6.0-experimental to 3.5.0:
+  - `99-installer-ignition-master`
+  - `99-installer-ignition-worker`
+  - `99-master-ssh`
+  - `99-worker-ssh`
+- Verifies the changes
+
+This ensures MCO can successfully render configurations for both master and worker pools.
+
+---
+
+### Step 6: Pause Master MCP
+
+```bash
+sudo ./06_pause_master_mcp_incluster.sh
+```
+
+**Purpose**: Prevents the master nodes from upgrading to the released configuration without trustee support.
+
+By pausing the master MachineConfigPool, we ensure that:
+- Masters retain the custom ignition configuration with Clevis/Trustee integration
+- Masters don't switch to the default released configuration that lacks trustee support
+- The confidential computing attestation setup is preserved
+
+This script:
+- Waits for the API server to be accessible
+- Waits for the master MachineConfigPool to be created
+- Checks the current pause status
+- Sets `spec.paused: true` on the master MachineConfigPool
+- Verifies the change was successful
+
+**Note**: This prevents normal MachineConfig updates, but does NOT prevent the initial bootstrap pivot during first boot.
+
+---
+
+### Step 7: Restart Worker
+
+```bash
+sudo ./07_restart_worker.sh
 ```
 
 **Purpose**: Recreates the worker VM with updated ignition configuration and attestation support.
 
----
+**Background**: Similar to the control plane, kcli hardcodes the ignition version to 3.2.0 and overrides the merge source configuration. The original `worker.ign` generated by openshift-install can be found at `/root/.kcli/clusters/test/worker.ign.ori` for comparison.
 
-### Step 6: Patch MachineConfig Ignition Version
+This script:
+- Stops the worker VM
+- Backs up the original ignition file
+- Updates ignition version from 3.2.0 to 3.6.0-experimental
+- Adds the ignition merge source: `http://10.73.211.28:8000/ignition-clevis-pin-trustee`
+  - This restores the Clevis/Trustee configuration that kcli removed
+  - Update the URL if using a different Trustee server
+- Cleans up TPM state and disk image
+- Recreates the worker VM with the corrected configuration
 
-```bash
-sudo ./06_patch_machineconfig_ignition_version.sh
-```
-
-**Purpose**: Patches ignition version in MachineConfig resources for MCO compatibility.
-
-Machine Config Operator doesn't support 3.6.0, so this script modifies the ignition version in MachineConfig resources from 3.6.0 to 3.5.0, allowing MCO to start successfully.
-
----
-
-### Step 7: Pause Master MCP
-
-```bash
-sudo ./07_pause_master_mcp_incluster.sh
-```
-
-**Purpose**: Pauses the master Machine Config Pool to prevent automatic updates during cluster configuration.
+The script provides detailed output at each step to track progress.
 
 ---
 

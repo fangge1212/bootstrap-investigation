@@ -1,11 +1,28 @@
 #!/bin/bash
 # Script to patch MachineConfig ignition versions to 3.5.0
-# oc describe co machine-config
-#    Master:  pool is degraded because rendering fails with "": "Failed to render configuration for pool master: could not generate rendered MachineConfig: parsing Ignition config failed: unknown version. Supported spec versions: 2.2,3.0,3.1,3.2,3.3,3.4,3.5"
-#    Worker:  pool is degraded because rendering fails with "": "Failed to render configuration for pool worker: could not generate rendered MachineConfig: parsing Ignition config failed: unknown version. Supported spec versions: 2.2,3.0,3.1,3.2,3.3,3.4,3.5"
-
 
 set -e
+
+echo "==================================================================="
+echo "  Patch MachineConfig Ignition Versions In-Cluster"
+echo "==================================================================="
+echo ""
+echo "PURPOSE: Patch the ignition version in MachineConfig cluster resources"
+echo "         from 3.6.0-experimental to 3.5.0 for MCO compatibility."
+echo ""
+echo "BACKGROUND: The current MCO doesn't support ignition 3.6.0-experimental."
+echo "            Even though Step 3 patched the source manifests on the bootstrap"
+echo "            node, the resulting MachineConfig objects in the cluster may still"
+echo "            have 3.6.0-experimental, causing MCO to fail with:"
+echo ""
+echo '            "Failed to render configuration: unknown version.'
+echo '             Supported spec versions: 2.2,3.0,3.1,3.2,3.3,3.4,3.5"'
+echo ""
+echo "            This script patches the actual Kubernetes MachineConfig objects"
+echo "            to ensure MCO can successfully render configurations."
+echo ""
+echo "==================================================================="
+echo ""
 
 KUBECONFIG="${KUBECONFIG:-/root/.kcli/clusters/test/auth/kubeconfig}"
 export KUBECONFIG
@@ -64,3 +81,4 @@ done
 
 echo ""
 echo "=== Patch complete ==="
+echo "==================================================================="

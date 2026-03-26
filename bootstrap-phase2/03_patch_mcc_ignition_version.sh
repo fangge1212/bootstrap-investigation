@@ -1,6 +1,15 @@
 #!/bin/bash
-# The current MCO doesn't ignition 3.6.0-experimental, to unblock the bootstrap process, we need to
-# SSH to bootstrap node, modify the ignition version in Machine Config Controller bootstrap manifests.
+# The current MCO doesn't support ignition 3.6.0-experimental. To unblock the bootstrap process,
+# we need to SSH to the bootstrap node and modify the ignition version in Machine Config Controller bootstrap manifests.
+
+echo "==================================================================="
+echo "  Patch MCC Manifests Ignition Version on Bootstrap Node"
+echo "==================================================================="
+echo ""
+echo "NOTE: The current MCO doesn't support ignition 3.6.0-experimental."
+echo "      To unblock the bootstrap process, we need to SSH to the bootstrap node"
+echo "      and modify the ignition version in Machine Config Controller bootstrap manifests."
+echo ""
 
 VM="test-bootstrap"          # VM name
 SSH_USER="core"              # username for SSH
@@ -25,6 +34,7 @@ wait_for_mcc() {
     done
 }
 
+echo "=== Getting bootstrap VM IP address ==="
 # Get the IP address from virsh domifaddr
 IP=$(virsh domifaddr "$VM" | awk '/ipv4/ {split($4,a,"/"); print a[1]}')
 
@@ -34,9 +44,22 @@ if [[ -z "$IP" ]]; then
 fi
 
 echo "VM $VM IP: $IP"
+echo ""
 
 wait_for_mcc $IP
 
+echo ""
+echo "=== Patching ignition version from 3.6.0-experimental to 3.5.0 ==="
+echo "Target files in /etc/mcc/bootstrap/:"
+echo "  - 99_openshift-machineconfig_99-worker-ssh.yaml"
+echo "  - 99_openshift-installer-ignition_master.yaml"
+echo "  - 99_openshift-machineconfig_99-master-ssh.yaml"
+echo "  - 99_openshift-installer-ignition_worker.yaml"
+echo ""
 # SSH into the VM and run the command
-echo "SSH to $VM and run $REMOTE_CMD"
+echo "Executing remote commands on $VM..."
 ssh -o StrictHostKeyChecking=no "${SSH_USER}@${IP}" "$REMOTE_CMD"
+
+echo ""
+echo "=== Patch complete ==="
+echo "==================================================================="

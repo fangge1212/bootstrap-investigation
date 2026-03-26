@@ -4,7 +4,20 @@ set -e
 
 KUBECONFIG="/root/.kcli/clusters/test/auth/kubeconfig"
 
-echo "=== Pausing master MachineConfigPool in-cluster ==="
+echo "==================================================================="
+echo "  Pause Master MachineConfigPool In-Cluster"
+echo "==================================================================="
+echo ""
+echo "PURPOSE: Prevent the master nodes from upgrading to the released"
+echo "         configuration without trustee support."
+echo ""
+echo "         By pausing the master MachineConfigPool, we ensure that"
+echo "         masters retain the custom ignition configuration with"
+echo "         Clevis/Trustee integration instead of switching to the"
+echo "         default released configuration that lacks trustee support."
+echo ""
+echo "==================================================================="
+echo ""
 
 # Wait for the API server to be available
 wait_for_api() {
@@ -68,6 +81,10 @@ if [ "$NEW_PAUSED" = "true" ]; then
     echo ""
     echo "✓ Master MachineConfigPool successfully paused!"
     echo ""
+    echo "IMPORTANT: This prevents the masters from upgrading to the released"
+    echo "           configuration without trustee support. Masters will now"
+    echo "           retain the custom Clevis/Trustee ignition configuration."
+    echo ""
     echo "Note: This prevents normal MachineConfig updates, but does NOT prevent"
     echo "      the initial bootstrap pivot during first boot."
 else
@@ -78,3 +95,4 @@ fi
 
 echo ""
 echo "=== Master MachineConfigPool pause complete ==="
+echo "==================================================================="
